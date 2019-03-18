@@ -1,0 +1,7 @@
+# Directories
+.settings/
+bin/
+
+# Files
+.classpath/
+.project/
