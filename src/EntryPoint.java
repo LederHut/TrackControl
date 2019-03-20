@@ -17,9 +17,9 @@ public class EntryPoint
 	
 	public static void main(String[] args) 
 	{
-		int rows = 50;
-		int cols = 50;
-		int cellWidth = 15;
+		int rows = 20;
+		int cols = 20;
+		int cellWidth = 30;
 		
 		 // Erzeugung eines neuen Dialoges
         JFrame frame = new JFrame();

@@ -4,6 +4,8 @@ import java.awt.event.KeyListener;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
+//could maybe use some tools like pulling a straight line or something like that
+//or like automatic curve laying mode stuff like that
 public class Toolbar extends JPanel
 {
 	GridPlanner Grid = null;
@@ -37,7 +39,7 @@ final class ToolbarKeyListner implements KeyListener
 		// TODO Auto-generated method stub
 		
 	}
-
+	
 	@Override
 	public void keyPressed(KeyEvent e) 
 	{
