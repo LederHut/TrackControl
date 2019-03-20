@@ -16,13 +16,22 @@ public class GridPlanner extends JPanel
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private Toolbar toolbar = null;
 	private JLabel[][] myLabels;
-	private ImageIcon image = null;
+	private ImageIcon[] image;
+	private int currentRail = 0;
 	
 	public GridPlanner(int rows, int cols, int cellWidth) {
 		myLabels = new JLabel[rows][cols];
-		image = new ImageIcon("src/suckmyballs.png");
-		image.getImage().flush();
+		
+		toolbar =  new Toolbar(this);
+		
+		image = new ImageIcon[3];
+		image[0] = new ImageIcon();
+		image[1] = new ImageIcon("src/suckmyballs.png");
+		image[1].getImage().flush();
+		image[2] = new ImageIcon("src/Ok Hand Sign Emoji.png");
+		image[2].getImage().flush();
 		
 		GridMouseListener myListener = new GridMouseListener(this);
 		Dimension labelPrefSize = new Dimension(cellWidth, cellWidth);
@@ -47,13 +56,22 @@ public class GridPlanner extends JPanel
 		{
 			for(int col = 0; col < myLabels.length; col++) 
 			{
-				if(label == myLabels[row][col]) 
+				if(label == myLabels[row][col])
 				{
-					myLabels[row][col].setIcon(image);
-					image.getImage().flush();
+					myLabels[row][col].setIcon(image[currentRail]);
+					image[currentRail].getImage().flush();
 				}
 			}
 		}
+	}
+	public Toolbar getThisToolbar()
+	{
+		return this.toolbar;
+	}
+	// needs to be renamed
+	public void currentrailselect(int num)
+	{
+		currentRail = num;
 	}
 }
 final class GridMouseListener extends MouseAdapter 

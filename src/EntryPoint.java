@@ -17,8 +17,8 @@ public class EntryPoint
 	
 	public static void main(String[] args) 
 	{
-		int rows = 100;
-		int cols = 100;
+		int rows = 50;
+		int cols = 50;
 		int cellWidth = 15;
 		
 		 // Erzeugung eines neuen Dialoges
@@ -27,12 +27,9 @@ public class EntryPoint
         frame.setSize(500,500);
         
         JPanel mainPanel = new JPanel();
-        JPanel toolbar = new JPanel();
-        toolbar.add(new JButton("pic 1"));
-        toolbar.add(new JButton("pic 2"));
-        toolbar.add(new JButton("pic 3"));
         GridPlanner grid = new GridPlanner(rows, cols, cellWidth);
-        mainPanel.add(toolbar,BorderLayout.WEST);
+       
+        //mainPanel.add(toolbar,BorderLayout.WEST);
         mainPanel.add(grid,BorderLayout.WEST);
         JScrollPane scrollPane = new JScrollPane ( mainPanel,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -55,6 +52,7 @@ public class EntryPoint
         
         // JTabbedPane wird unserem Dialog hinzugefügt
         frame.add(tabpane);
+        frame.add(grid.getThisToolbar(),BorderLayout.WEST);
         //meinJDialog.pack();
         // Wir lassen unseren Dialog anzeigen
         frame.setVisible(true);
