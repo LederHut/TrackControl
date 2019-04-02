@@ -1,16 +1,5 @@
-import java.util.*;
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.event.*;
-
 import javax.swing.*;
-import javax.swing.Timer;
-
 
 public class EntryPoint 
 {
@@ -22,13 +11,13 @@ public class EntryPoint
 	
 	public EntryPoint() 
 	{
-		int rows = 20;
-		int cols = 20;
-		int cellWidth = 30;
+		int rows = 50;
+		int cols = 50;
+		int cellWidth = 32;
 		
 		grid = new GridPlanner(rows, cols, cellWidth);
-		
-        frame.setTitle("JPanel Beispiel");
+
+        frame.setTitle("Track Planner");
         frame.setSize(1000,500);
         
         mainPanel.add(grid,BorderLayout.WEST);
@@ -40,8 +29,6 @@ public class EntryPoint
         
         frame.add(tabpane);
         frame.add(grid.getThisToolbar(),BorderLayout.WEST);
-
-        
 	}
 	
 	public static void start ()

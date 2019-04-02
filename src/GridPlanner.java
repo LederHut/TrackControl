@@ -1,28 +1,25 @@
-
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
 import java.awt.GridLayout;
 import java.awt.Image;
-import java.awt.RenderingHints;
-import java.awt.Transparency;
+import java.awt.List;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
+import java.util.Arrays;
+import java.util.Random;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 
-public class GridPlanner extends JPanel
+public class GridPlanner extends JPanel implements MouseWheelListener
 {
-
 	/**
 	 * 
 	 */
@@ -30,95 +27,270 @@ public class GridPlanner extends JPanel
 	
 	private Toolbar toolbar = null;
 	private JLabel[][] myLabels;
-	private ImageIcon[] image;
-	private int currentRail = 0;
+	private ImageIcon[][] orignalImages;	//stores all the original images
+	private ImageIcon[][] scaledImages;
+	private int currentSelectedRail = 0;
+	private int[] railOrientation;
+	private int [][][] gridMetadata = new int [50][50][2];	// max number of cells is this capacity divided by 3.
+													   		// [x][y][0] saves the imageID of the label on that index.
+													   		// [x][y][1] saves the imageOrientation of the label on that index.
+	private double currentGridTileSize = 0;
 	
 	public GridPlanner(int rows, int cols, int cellWidth) 
-	{
-		myLabels = new JLabel[rows][cols];
-		image = new ImageIcon[3];
+	{	
+		currentGridTileSize = cellWidth;
 		
 		toolbar =  new Toolbar(this);
+		myLabels = new JLabel[rows][cols];
 		
-		image[0] = new ImageIcon("src/DirtGround.png");
-		image[1] = new ImageIcon("src/StraightRail-HZ.png");
-		image[2] = new ImageIcon("src/CurvedRail_BR.png");
+		orignalImages = new ImageIcon[4][4];
+		LoadImages();
+		 
+		scaledImages = new ImageIcon[4][4];
+		scaleRailImages();
 		
-		Image newimg = image[0].getImage().getScaledInstance(cellWidth, cellWidth,  java.awt.Image.SCALE_SMOOTH);
-		image[0] = new ImageIcon(newimg);
+		railOrientation = new int[] {0,0,0,0,0,0,0,0};
 		
-		GridMouseListener myListener = new GridMouseListener(this);
+		LabelMouseListener myListener = new LabelMouseListener(this);
 		Dimension labelPrefSize = new Dimension(cellWidth, cellWidth);
 		
 		setLayout(new GridLayout(rows, cols));
-		for(int col = 0; col < myLabels.length; col++) 
+		addMouseWheelListener(this);
+		for(int col = 0; col < myLabels.length; col++)
 		{
-			for(int row = 0; row < myLabels.length; row++) 
+			for(int row = 0; row < myLabels.length; row++)
 			{	
-				JLabel myLabel = new JLabel(image[0]);
-				myLabel.setBorder(BorderFactory.createStrokeBorder(new BasicStroke(1.0f)));
+				int  imageID = rand_int(2);
+				int  imageOrientation = rand_int(3);
+				
+				JLabel myLabel = new JLabel(scaledImages[imageID][imageOrientation]);
+				//myLabel.setBorder(BorderFactory.createStrokeBorder(new BasicStroke(1f))); //// can be an option to turn it of or on as grid.
 				myLabel.setOpaque(true);
 				myLabel.addMouseListener(myListener);
 				myLabel.setPreferredSize(labelPrefSize);
+				
 				add(myLabel);
 				myLabels[row][col] = myLabel;
+				UpdateMetadata(imageID, imageOrientation, row, col);
+				
 			}
 		}
+		
+		
 	}
-	public void labelPressed(JLabel label) 
+	
+	
+	/**
+     * Loads all available images.
+     */
+	private void LoadImages()
 	{
-		for(int row = 0; row < myLabels.length; row++) 
+		//Ground variation one
+		orignalImages[0][0] = new ImageIcon("src/Images/Ground_1_360_0.png");
+		orignalImages[0][1] = new ImageIcon("src/Images/Ground_1_90_1.png");
+		orignalImages[0][2] = new ImageIcon("src/Images/Ground_1_180_2.png");
+		orignalImages[0][3] = new ImageIcon("src/Images/Ground_1_270_3.png");
+		
+		//Ground variation two
+		orignalImages[1][0] = new ImageIcon("src/Images/Ground_2_360_0.png");
+		orignalImages[1][1] = new ImageIcon("src/Images/Ground_2_90_1.png");
+		orignalImages[1][2] = new ImageIcon("src/Images/Ground_2_180_2.png");
+		orignalImages[1][3] = new ImageIcon("src/Images/Ground_2_270_3.png");
+		
+		//Ground variation three
+		orignalImages[2][0] = new ImageIcon("src/Images/Ground_3_360_0.png");
+		orignalImages[2][1] = new ImageIcon("src/Images/Ground_3_90_1.png");
+		orignalImages[2][2] = new ImageIcon("src/Images/Ground_3_180_2.png");
+		orignalImages[2][3] = new ImageIcon("src/Images/Ground_3_270_3.png");
+		
+		//Straight rail
+		orignalImages[3][0] = new ImageIcon("src/Images/Rail_S_360_0.png");
+		orignalImages[3][1] = new ImageIcon("src/Images/Rail_S_90_1.png");
+		orignalImages[3][2] = new ImageIcon("src/Images/Rail_S_180_2.png");
+		orignalImages[3][3] = new ImageIcon("src/Images/Rail_S_270_3.png");
+		
+		//orignalImages[4][0] = new ImageIcon("src/Schiene_Rotate.png");
+		
+		//orignalImages[5][0] = new ImageIcon("src/Cross_Junction.png");
+		
+		//orignalImages[6][0] = new ImageIcon("src/Diagonale.png");
+		
+		//orignalImages[7][0] = new ImageIcon("src/Cross_Y_Weiche.png");
+	}
+	
+	
+	/**
+     * Changes the icon of the pressed label.
+     * 
+     * @param label The JLabel that got pressed.
+     * 
+     */
+	public void labelPressed(JLabel label) 
+	{		
+		for(int col = 0; col < myLabels.length; col++)
 		{
-			for(int col = 0; col < myLabels.length; col++) 
+			for(int row = 0; row < myLabels.length; row++)
 			{
 				if(label == myLabels[row][col])
 				{
-					Image newimg = image[currentRail].getImage().getScaledInstance(myLabels[row][col].getWidth(), myLabels[row][col].getHeight(),  java.awt.Image.SCALE_SMOOTH); // scale it the smooth way  
-					image[currentRail] = new ImageIcon(newimg); 
+					label.setIcon(scaledImages[currentSelectedRail]
+											  [railOrientation[currentSelectedRail]]);
 					
-					myLabels[row][col].setIcon(image[currentRail]);
-					
+					UpdateMetadata(currentSelectedRail,
+								   railOrientation[currentSelectedRail],
+								   row,
+								   col);
+					return;
 				}
 			}
 		}
+		
 	}
-	public void rotateImage(double angle)
-	{ 
-		image[currentRail].setImage(ImageTool.rotate(image[currentRail].getImage(),angle));
+	
+	
+	/**
+     * Scales images to the currentGridTileSize.
+     */
+	private void scaleRailImages()
+	{		
+		for(int col = 0; col < orignalImages.length; col++)
+		{
+			for(int row = 0; row < orignalImages[col].length; row++)
+			{
+				scaledImages[col][row] = new ImageIcon(orignalImages[col][row].getImage().getScaledInstance((int)(currentGridTileSize),
+		  				  																					(int)(currentGridTileSize),
+		  				  																					java.awt.Image.SCALE_SMOOTH));
+			}
+			
+		}
+	}
+	
+	/**
+	 * Resizes the grid to the specified zoom
+	 * 
+	 * @param zoomscale The amount of zoom/scale as percent given in decimal
+	 *
+	 */
+	private void gridZoom(double zoomscale)
+	{
+		
+		currentGridTileSize *= zoomscale;
+		
+		if(currentGridTileSize <= 16)
+		{
+			currentGridTileSize = 16;
+		}
+		else if(currentGridTileSize >= 64)
+		{
+			currentGridTileSize = 64;
+		}
+		
+		Dimension newsize = new Dimension((int) (currentGridTileSize),
+										  (int) (currentGridTileSize));
+		scaleRailImages();
+
+		for(int col = 0; col < myLabels.length; col++)
+		{
+			for(int row = 0; row < myLabels.length; row++)
+			{
+				myLabels[row][col].setIcon(scaledImages[gridMetadata[row][col][0]]
+													   [gridMetadata[row][col][1]]);
+				myLabels[row][col].setSize(newsize);
+				myLabels[row][col].setPreferredSize(newsize);
+			}
+		}
+	}
+	
+	/**
+	 * Handles MouseWheel input.
+	 * 
+	 * @param e MouseWheelEvent of this class
+	 *
+	 */
+	public void mouseWheelMoved(MouseWheelEvent e) 
+	{
+		if(e.getPreciseWheelRotation() < 0 && currentGridTileSize != 64)
+		{
+			gridZoom(1.2);
+		}
+		if(e.getPreciseWheelRotation() > 0 && currentGridTileSize != 16)
+		{
+			gridZoom(0.9);
+		}
+		
+	}
+	
+	
+	/**
+     * Returns an Random integer.
+     * 
+     * @param bounds The exclusive upper bound.
+     * 
+     * @return An random integer in the given bounds.
+     * 
+     */
+	private int rand_int(int bounds) 
+	{
+	    Random rand = new Random();
+	    int randomElemnt = rand.nextInt(bounds); 
+	    return randomElemnt;
+	}
+	
+	
+	private void UpdateMetadata(int imageID , int imageOrientation,int row  ,int col )
+	{
+		gridMetadata[row][col][0] = imageID;
+		gridMetadata[row][col][1] = imageOrientation;
 	}
 	public Toolbar getThisToolbar()
 	{
 		return this.toolbar;
 	}
-	// needs to be renamed
-	public void currentrailselect(int num)
+	public void setSelectedRail(int num)
 	{
-		currentRail = num;
+		currentSelectedRail = num;
 	}
-	public ImageIcon getCurrentRailImage() {
-		// TODO Auto-generated method stub
-		return image[currentRail];
+	public void setSelectedRailOrientation(int orientation)
+	{
+		railOrientation[currentSelectedRail] = orientation;
 	}
+	public int getSelectedRailOrientation()
+	{
+		return railOrientation[currentSelectedRail];
+	}
+	public ImageIcon getCurrentRailImage()
+	{
+		return orignalImages[currentSelectedRail]
+							[railOrientation[currentSelectedRail]];
+	}
+	
 }
-final class GridMouseListener extends MouseAdapter 
+
+//Handles all mouse actions performed on the JLable's allocated in the grid
+class LabelMouseListener extends MouseAdapter 
 {
 	private GridPlanner colorGrid;
-	private boolean isPressed = false;
+	private boolean isPressed = false; //secures that only when the mouse IS pressed that the icon gets replaced
 	
-	public GridMouseListener(GridPlanner colorGrid) {
-		this.colorGrid = colorGrid;
+	public LabelMouseListener(GridPlanner grid) 
+	{
+		this.colorGrid = grid;
 	}
 	
+	//When the left mouse button is pressed the selected image is set as the JLabels's icon
 	@Override
-	public void mousePressed(MouseEvent e) 
+	public void mousePressed(MouseEvent e)
 	{
-		if (e.getID() == MouseEvent.MOUSE_PRESSED && !isPressed) 
+		if(SwingUtilities.isLeftMouseButton(e))
 		{
-			isPressed = true;
-		}
-		if(isPressed)
-		{
-			colorGrid.labelPressed((JLabel)e.getSource());
+			if (e.getID() == MouseEvent.MOUSE_PRESSED && !isPressed) 
+			{
+				isPressed = true;
+			}
+			if(isPressed)
+			{
+				colorGrid.labelPressed((JLabel)e.getSource());
+			}
 		}
 	}
 	@Override
@@ -132,9 +304,13 @@ final class GridMouseListener extends MouseAdapter
 	@Override
 	public void mouseReleased(MouseEvent e)
 	{
-		if(e.getID() == MouseEvent.MOUSE_RELEASED && isPressed)
+		if(SwingUtilities.isLeftMouseButton(e))
 		{
-			isPressed = false;
+			if(e.getID() == MouseEvent.MOUSE_RELEASED && isPressed)
+			{
+				isPressed = false;
+			}
 		}
+		
 	}
 }

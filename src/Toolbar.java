@@ -1,7 +1,6 @@
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-
 import javax.swing.*;
 
 //could maybe use some tools like pulling a straight line or something like that
@@ -39,32 +38,60 @@ public class Toolbar extends JPanel implements KeyListener
 	}
 	
 	@Override
-	public void keyTyped(KeyEvent e) {
+	public void keyTyped(KeyEvent e)
+	{
 		// TODO Auto-generated method stub
-		
 	}
 	
+	// Handles the keyboard input for the toolbar.
+	// Numeric keys change the selected building block(rail).
+	// E : used for the eraser "tool".
+	// 
+	// Right now only the key e and 1 are bound properly.
+	// The other keys will give of errors.
 	@Override
 	public void keyPressed(KeyEvent e) 
 	{
 		if(e.getKeyCode() == KeyEvent.VK_1)
 		{
-			Grid.currentrailselect(1);
+			Grid.setSelectedRail(3);
 			railPreview.setIcon(new ImageIcon(Grid.getCurrentRailImage().getImage().getScaledInstance(128, 128,  java.awt.Image.SCALE_SMOOTH)));
 		}
 		if(e.getKeyCode() == KeyEvent.VK_2)
 		{
-			Grid.currentrailselect(2);
+			Grid.setSelectedRail(4);
+			railPreview.setIcon(new ImageIcon(Grid.getCurrentRailImage().getImage().getScaledInstance(128, 128,  java.awt.Image.SCALE_SMOOTH)));
+		}
+		if(e.getKeyCode() == KeyEvent.VK_3)
+		{
+			Grid.setSelectedRail(5);
+			railPreview.setIcon(new ImageIcon(Grid.getCurrentRailImage().getImage().getScaledInstance(128, 128,  java.awt.Image.SCALE_SMOOTH)));
+		}
+		if(e.getKeyCode() == KeyEvent.VK_4)
+		{
+			Grid.setSelectedRail(6);
+			railPreview.setIcon(new ImageIcon(Grid.getCurrentRailImage().getImage().getScaledInstance(128, 128,  java.awt.Image.SCALE_SMOOTH)));
+		}
+		if(e.getKeyCode() == KeyEvent.VK_5)
+		{
+			Grid.setSelectedRail(7);
 			railPreview.setIcon(new ImageIcon(Grid.getCurrentRailImage().getImage().getScaledInstance(128, 128,  java.awt.Image.SCALE_SMOOTH)));
 		}
 		if(e.getKeyCode() == KeyEvent.VK_E)
 		{
-			Grid.currentrailselect(0);
+			Grid.setSelectedRail(0);
 			railPreview.setIcon(new ImageIcon(Grid.getCurrentRailImage().getImage().getScaledInstance(128, 128,  java.awt.Image.SCALE_SMOOTH)));
 		}
 		if(e.getKeyCode() == KeyEvent.VK_R)
 		{
-			Grid.rotateImage(90);
+			if(Grid.getSelectedRailOrientation() == 3)
+			{
+				Grid.setSelectedRailOrientation(0);
+			}
+			else
+			{
+				Grid.setSelectedRailOrientation(Grid.getSelectedRailOrientation() + 1);
+			}
 			railPreview.setIcon(new ImageIcon(Grid.getCurrentRailImage().getImage().getScaledInstance(128, 128,  java.awt.Image.SCALE_SMOOTH)));
 		}
 	}
