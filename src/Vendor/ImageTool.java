@@ -1,4 +1,4 @@
-
+package Vendor;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -247,7 +247,7 @@ public abstract class ImageTool {
     /**
      * Makes a color in an Image transparent.
      */
-    public static Image mask(Image img, Color color){
+    public static Image mask(Image img){
         BufferedImage bimg = toBufferedImage(getEmptyImage(img.getWidth(null), img.getHeight(null)));
         Graphics2D g = bimg.createGraphics();
         g.drawImage(img, 0, 0, null);
@@ -255,9 +255,10 @@ public abstract class ImageTool {
         for (int y=0; y<bimg.getHeight(); y++){
             for (int x=0; x<bimg.getWidth(); x++){
                 int col = bimg.getRGB(x, y);
-                if (col==color.getRGB()){
-                    bimg.setRGB(x, y, col & 0x00ffffff);
-                }
+                bimg.setRGB(x, y, col & 0x00ffffff);
+                //if (col==color.getRGB()){
+                //  
+                //}
             }
         }
         return toImage(bimg);

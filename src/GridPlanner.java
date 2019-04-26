@@ -1,14 +1,10 @@
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.List;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.util.Arrays;
 import java.util.Random;
 
 import javax.swing.BorderFactory;
@@ -17,7 +13,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-
 public class GridPlanner extends JPanel implements MouseWheelListener
 {
 	/**
@@ -25,15 +20,20 @@ public class GridPlanner extends JPanel implements MouseWheelListener
 	 */
 	private static final long serialVersionUID = -2317402967205059398L;
 	
+	private int [][][] gridMetadata = new int [50][50][3];	// max number of cells is this capacity divided by 3.
+															// [x][y][0] saves the imageID of the label on that index.
+															// [x][y][1] saves the imageOrientation of the label on that index.
+													    	// [x][y][2] saves the ground of the respective image it uses.
 	private Toolbar toolbar = null;
 	private JLabel[][] myLabels;
-	private ImageIcon[][] orignalImages;	//stores all the original images
-	private ImageIcon[][] scaledImages;
-	private int currentSelectedRail = 0;
-	private int[] railOrientation;
-	private int [][][] gridMetadata = new int [50][50][2];	// max number of cells is this capacity divided by 3.
-													   		// [x][y][0] saves the imageID of the label on that index.
-													   		// [x][y][1] saves the imageOrientation of the label on that index.
+	private JLabel lastenteredLabel = null;
+	private int lastenteredLabelrow = 0;
+	private int lastenteredLabelcol = 0;
+	private ImageIcon[][][] orignalImages;					//stores the original images.
+	private ImageIcon[][][] scaledImages;
+	private int selectedRail = 0;
+	private int selectedRailOrientation = 0;
+	
 	private double currentGridTileSize = 0;
 	
 	public GridPlanner(int rows, int cols, int cellWidth) 
@@ -43,35 +43,39 @@ public class GridPlanner extends JPanel implements MouseWheelListener
 		toolbar =  new Toolbar(this);
 		myLabels = new JLabel[rows][cols];
 		
-		orignalImages = new ImageIcon[4][4];
+		orignalImages = new ImageIcon[5][3][4];
 		LoadImages();
-		 
-		scaledImages = new ImageIcon[4][4];
+		
+		scaledImages = new ImageIcon[5][3][4];
 		scaleRailImages();
 		
-		railOrientation = new int[] {0,0,0,0,0,0,0,0};
 		
 		LabelMouseListener myListener = new LabelMouseListener(this);
 		Dimension labelPrefSize = new Dimension(cellWidth, cellWidth);
 		
 		setLayout(new GridLayout(rows, cols));
 		addMouseWheelListener(this);
+		
+		//Generates the grid
 		for(int col = 0; col < myLabels.length; col++)
 		{
 			for(int row = 0; row < myLabels.length; row++)
 			{	
-				int  imageID = rand_int(2);
-				int  imageOrientation = rand_int(3);
+				int  imageOrientation = rand_int(4);
+				int  groundImageID = rand_int(3);
 				
-				JLabel myLabel = new JLabel(scaledImages[imageID][imageOrientation]);
-				//myLabel.setBorder(BorderFactory.createStrokeBorder(new BasicStroke(1f))); //// can be an option to turn it of or on as grid.
+				JLabel myLabel = new JLabel(scaledImages[0]
+														[groundImageID]
+														[imageOrientation]);
+				
+				myLabel.setBorder(BorderFactory.createStrokeBorder(new BasicStroke(1.0f))); //// can be an option to turn it of or on as grid.
 				myLabel.setOpaque(true);
 				myLabel.addMouseListener(myListener);
 				myLabel.setPreferredSize(labelPrefSize);
 				
 				add(myLabel);
 				myLabels[row][col] = myLabel;
-				UpdateMetadata(imageID, imageOrientation, row, col);
+				UpdateMetadata(0, imageOrientation, groundImageID, row, col);
 				
 			}
 		}
@@ -81,35 +85,74 @@ public class GridPlanner extends JPanel implements MouseWheelListener
 	
 	
 	/**
-     * Loads all available images.
+     * Loads all available and needed images.
      */
 	private void LoadImages()
 	{
-		//Ground variation one
-		orignalImages[0][0] = new ImageIcon("src/Images/Ground_1_360_0.png");
-		orignalImages[0][1] = new ImageIcon("src/Images/Ground_1_90_1.png");
-		orignalImages[0][2] = new ImageIcon("src/Images/Ground_1_180_2.png");
-		orignalImages[0][3] = new ImageIcon("src/Images/Ground_1_270_3.png");
+
+		//Ground 
+		//
+		//Variation one
+		orignalImages[0][0][0] = new ImageIcon("src/Images/Ground_1_360_0.png");
+		orignalImages[0][0][1] = new ImageIcon("src/Images/Ground_1_90_1.png");
+		orignalImages[0][0][2] = new ImageIcon("src/Images/Ground_1_180_2.png");
+		orignalImages[0][0][3] = new ImageIcon("src/Images/Ground_1_270_3.png");
+		//
+		//Variation two
+		orignalImages[0][1][0] = new ImageIcon("src/Images/Ground_2_360_0.png");
+		orignalImages[0][1][1] = new ImageIcon("src/Images/Ground_2_90_1.png");
+		orignalImages[0][1][2] = new ImageIcon("src/Images/Ground_2_180_2.png");
+		orignalImages[0][1][3] = new ImageIcon("src/Images/Ground_2_270_3.png");
+		//
+		//Variation three
+		orignalImages[0][2][0] = new ImageIcon("src/Images/Ground_3_360_0.png");
+		orignalImages[0][2][1] = new ImageIcon("src/Images/Ground_3_90_1.png");
+		orignalImages[0][2][2] = new ImageIcon("src/Images/Ground_3_180_2.png");
+		orignalImages[0][2][3] = new ImageIcon("src/Images/Ground_3_270_3.png");
+		//-----------------------------------------------------------------------
 		
-		//Ground variation two
-		orignalImages[1][0] = new ImageIcon("src/Images/Ground_2_360_0.png");
-		orignalImages[1][1] = new ImageIcon("src/Images/Ground_2_90_1.png");
-		orignalImages[1][2] = new ImageIcon("src/Images/Ground_2_180_2.png");
-		orignalImages[1][3] = new ImageIcon("src/Images/Ground_2_270_3.png");
-		
-		//Ground variation three
-		orignalImages[2][0] = new ImageIcon("src/Images/Ground_3_360_0.png");
-		orignalImages[2][1] = new ImageIcon("src/Images/Ground_3_90_1.png");
-		orignalImages[2][2] = new ImageIcon("src/Images/Ground_3_180_2.png");
-		orignalImages[2][3] = new ImageIcon("src/Images/Ground_3_270_3.png");
 		
 		//Straight rail
-		orignalImages[3][0] = new ImageIcon("src/Images/Rail_S_360_0.png");
-		orignalImages[3][1] = new ImageIcon("src/Images/Rail_S_90_1.png");
-		orignalImages[3][2] = new ImageIcon("src/Images/Rail_S_180_2.png");
-		orignalImages[3][3] = new ImageIcon("src/Images/Rail_S_270_3.png");
+		//
+		//Variation one
+		orignalImages[1][0][0] = new ImageIcon("src/Images/Prototype_G0_R1.png");
+		orignalImages[1][0][1] = new ImageIcon("src/Images/Prototype_G0_R2.png");
+		orignalImages[1][0][2] = new ImageIcon("src/Images/Prototype_G0_R3.png");
+		orignalImages[1][0][3] = new ImageIcon("src/Images/Prototype_G0_R4.png");
+		//
+		//Variation two
+		orignalImages[1][1][0] = new ImageIcon("src/Images/Prototype_G0_R1.png");
+		orignalImages[1][1][1] = new ImageIcon("src/Images/Prototype_G0_R2.png");
+		orignalImages[1][1][2] = new ImageIcon("src/Images/Prototype_G0_R3.png");
+		orignalImages[1][1][3] = new ImageIcon("src/Images/Prototype_G0_R4.png");
+		//
+		//Variation three
+		orignalImages[1][2][0] = new ImageIcon("src/Images/Prototype_G0_R1.png");
+		orignalImages[1][2][1] = new ImageIcon("src/Images/Prototype_G0_R2.png");
+		orignalImages[1][2][2] = new ImageIcon("src/Images/Prototype_G0_R3.png");
+		orignalImages[1][2][3] = new ImageIcon("src/Images/Prototype_G0_R4.png");
+		//-----------------------------------------------------------------------
 		
-		//orignalImages[4][0] = new ImageIcon("src/Schiene_Rotate.png");
+		//Corner rail
+		//
+		//Variation one
+		orignalImages[2][0][0] = new ImageIcon("src/Images/Corner_Prototype_R_0.png");
+		orignalImages[2][0][1] = new ImageIcon("src/Images/Corner_Prototype_R_1.png");
+		orignalImages[2][0][2] = new ImageIcon("src/Images/Corner_Prototype_R_3.png");
+		orignalImages[2][0][3] = new ImageIcon("src/Images/Corner_Prototype_R_2.png");
+		//
+		//Variation two
+		orignalImages[2][1][0] = new ImageIcon("src/Images/Corner_Prototype_R_0.png");
+		orignalImages[2][1][1] = new ImageIcon("src/Images/Corner_Prototype_R_1.png");
+		orignalImages[2][1][2] = new ImageIcon("src/Images/Corner_Prototype_R_3.png");
+		orignalImages[2][1][3] = new ImageIcon("src/Images/Corner_Prototype_R_2.png");
+		//
+		//Variation three
+		orignalImages[2][2][0] = new ImageIcon("src/Images/Corner_Prototype_R_0.png");
+		orignalImages[2][2][1] = new ImageIcon("src/Images/Corner_Prototype_R_1.png");
+		orignalImages[2][2][2] = new ImageIcon("src/Images/Corner_Prototype_R_3.png");
+		orignalImages[2][2][3] = new ImageIcon("src/Images/Corner_Prototype_R_2.png");
+		//-----------------------------------------------------------------------
 		
 		//orignalImages[5][0] = new ImageIcon("src/Cross_Junction.png");
 		
@@ -125,19 +168,27 @@ public class GridPlanner extends JPanel implements MouseWheelListener
      * @param label The JLabel that got pressed.
      * 
      */
-	public void labelPressed(JLabel label) 
+	public void labelPressed(JLabel label)
 	{		
-		for(int col = 0; col < myLabels.length; col++)
-		{
-			for(int row = 0; row < myLabels.length; row++)
-			{
+		for(int col = 0; col < myLabels.length; col++){
+			for(int row = 0; row < myLabels.length; row++){
 				if(label == myLabels[row][col])
 				{
-					label.setIcon(scaledImages[currentSelectedRail]
-											  [railOrientation[currentSelectedRail]]);
+					if(selectedRail == 0)
+					{
+						label.setIcon(scaledImages[gridMetadata[row][col][0]]
+												  [gridMetadata[row][col][2]]
+								                  [gridMetadata[row][col][1]]);
+					}
+					else
+					{
+						label.setIcon(scaledImages[selectedRail]
+												  [gridMetadata[row][col][2]]
+								  	  			  [selectedRailOrientation]);
+					}
 					
-					UpdateMetadata(currentSelectedRail,
-								   railOrientation[currentSelectedRail],
+					UpdateMetadata(selectedRail,
+								   selectedRailOrientation,
 								   row,
 								   col);
 					return;
@@ -147,21 +198,19 @@ public class GridPlanner extends JPanel implements MouseWheelListener
 		
 	}
 	
-	
 	/**
      * Scales images to the currentGridTileSize.
      */
 	private void scaleRailImages()
 	{		
-		for(int col = 0; col < orignalImages.length; col++)
-		{
-			for(int row = 0; row < orignalImages[col].length; row++)
-			{
-				scaledImages[col][row] = new ImageIcon(orignalImages[col][row].getImage().getScaledInstance((int)(currentGridTileSize),
-		  				  																					(int)(currentGridTileSize),
-		  				  																					java.awt.Image.SCALE_SMOOTH));
+		for(int x = 0; x < 3; x++){
+			for(int y = 0; y < 3; y++){
+				for(int z = 0; z < 4; z++){
+					scaledImages[x][y][z] = new ImageIcon(orignalImages[x][y][z].getImage().getScaledInstance((int)(currentGridTileSize),
+																											  (int)(currentGridTileSize),
+																											  java.awt.Image.SCALE_SMOOTH));
+				}
 			}
-			
 		}
 	}
 	
@@ -180,26 +229,28 @@ public class GridPlanner extends JPanel implements MouseWheelListener
 		{
 			currentGridTileSize = 16;
 		}
-		else if(currentGridTileSize >= 64)
+		else if(currentGridTileSize >= 128)
 		{
-			currentGridTileSize = 64;
+			currentGridTileSize = 128;
 		}
 		
 		Dimension newsize = new Dimension((int) (currentGridTileSize),
 										  (int) (currentGridTileSize));
 		scaleRailImages();
-
+		
 		for(int col = 0; col < myLabels.length; col++)
 		{
 			for(int row = 0; row < myLabels.length; row++)
 			{
 				myLabels[row][col].setIcon(scaledImages[gridMetadata[row][col][0]]
+													   [gridMetadata[row][col][2]]
 													   [gridMetadata[row][col][1]]);
 				myLabels[row][col].setSize(newsize);
 				myLabels[row][col].setPreferredSize(newsize);
 			}
 		}
 	}
+	
 	
 	/**
 	 * Handles MouseWheel input.
@@ -209,10 +260,12 @@ public class GridPlanner extends JPanel implements MouseWheelListener
 	 */
 	public void mouseWheelMoved(MouseWheelEvent e) 
 	{
-		if(e.getPreciseWheelRotation() < 0 && currentGridTileSize != 64)
+		//Zoom in
+		if(e.getPreciseWheelRotation() < 0 && currentGridTileSize != 128)
 		{
 			gridZoom(1.2);
 		}
+		//Zoom out
 		if(e.getPreciseWheelRotation() > 0 && currentGridTileSize != 16)
 		{
 			gridZoom(0.9);
@@ -229,52 +282,146 @@ public class GridPlanner extends JPanel implements MouseWheelListener
      * @return An random integer in the given bounds.
      * 
      */
-	private int rand_int(int bounds) 
+	public int rand_int(int bounds) 
 	{
 	    Random rand = new Random();
 	    int randomElemnt = rand.nextInt(bounds); 
 	    return randomElemnt;
 	}
 	
-	
-	private void UpdateMetadata(int imageID , int imageOrientation,int row  ,int col )
+	//UpdateMetadata
+	//
+	/**
+     * Returns an Random integer. #placeholder
+     * 
+     * @param bounds The exclusive upper bound. #placeholder
+     * 
+     * @return An random integer in the given bounds. #placeholder
+     * 
+     */
+	private void UpdateMetadata(int imageID, int imageOrientation, int groundImageID, int row, int col )
 	{
 		gridMetadata[row][col][0] = imageID;
 		gridMetadata[row][col][1] = imageOrientation;
+		gridMetadata[row][col][2] = groundImageID;
+	}
+	//Override
+	//
+	/**
+     * Returns an Random integer. #placeholder
+     * 
+     * @param bounds The exclusive upper bound. #placeholder
+     * 
+     * @return An random integer in the given bounds. #placeholder
+     * 
+     */
+	private void UpdateMetadata(int imageID, int imageOrientation, int row, int col )
+	{
+		gridMetadata[row][col][0] = imageID;
+		gridMetadata[row][col][1] = imageOrientation;
+	}
+	//-----------------------------------------------------------------------
+	
+	//showCurrentselect
+	//
+	/**
+     * Returns an Random integer. #placeholder
+     * 
+     * @param bounds The exclusive upper bound. #placeholder
+     * 
+     * @return An random integer in the given bounds. #placeholder
+     * 
+     */
+	public void showCurrentselect(JLabel label)
+	{
+		for(int col = 0; col < myLabels.length; col++){
+			for(int row = 0; row < myLabels.length; row++){
+				if(label == myLabels[row][col])
+				{
+					label.setIcon(scaledImages[selectedRail]
+											  [gridMetadata[row][col][2]]
+											  [selectedRailOrientation]);
+					
+					lastenteredLabel = label;
+					lastenteredLabelrow = row;
+					lastenteredLabelcol = col;
+					
+					return;
+				}
+			}
+		}
+	}
+	//Override
+	//
+	/**
+     * Returns an Random integer. #placeholder
+     * 
+     * @param bounds The exclusive upper bound. #placeholder
+     * 
+     * @return An random integer in the given bounds. #placeholder
+     * 
+     */
+	public void showCurrentselect()
+	{
+		lastenteredLabel.setIcon(scaledImages[selectedRail]
+								  			 [gridMetadata[lastenteredLabelrow][lastenteredLabelcol][2]]
+								  			 [selectedRailOrientation]);
+	}
+	//-----------------------------------------------------------------------
+
+	public void hideCurrentselect(JLabel label)
+	{
+		for(int col = 0; col < myLabels.length; col++){
+			for(int row = 0; row < myLabels.length; row++){
+				if(label == myLabels[row][col])
+				{
+					label.setIcon(scaledImages[gridMetadata[row][col][0]]
+											  [gridMetadata[row][col][2]]
+											  [gridMetadata[row][col][1]]);
+					return;
+				}
+			}
+		}
 	}
 	public Toolbar getThisToolbar()
 	{
 		return this.toolbar;
 	}
+	
+	//Get'r and set'r functions for selectedRail
+	//
 	public void setSelectedRail(int num)
 	{
-		currentSelectedRail = num;
+		selectedRail = num;
 	}
+	public int getSelectedRail()
+	{
+		return selectedRail;
+	}
+	//-----------------------------------------------------------------------
+	
+	//Get'r and set'r functions for selectedRailOrientation
+	//
 	public void setSelectedRailOrientation(int orientation)
 	{
-		railOrientation[currentSelectedRail] = orientation;
+		selectedRailOrientation = orientation;
 	}
 	public int getSelectedRailOrientation()
 	{
-		return railOrientation[currentSelectedRail];
+		return selectedRailOrientation;
 	}
-	public ImageIcon getCurrentRailImage()
-	{
-		return orignalImages[currentSelectedRail]
-							[railOrientation[currentSelectedRail]];
-	}
-	
+	//-----------------------------------------------------------------------
 }
 
 //Handles all mouse actions performed on the JLable's allocated in the grid
 class LabelMouseListener extends MouseAdapter 
 {
-	private GridPlanner colorGrid;
+	private GridPlanner Grid;
 	private boolean isPressed = false; //secures that only when the mouse IS pressed that the icon gets replaced
 	
 	public LabelMouseListener(GridPlanner grid) 
 	{
-		this.colorGrid = grid;
+		this.Grid = grid;
 	}
 	
 	//When the left mouse button is pressed the selected image is set as the JLabels's icon
@@ -289,16 +436,8 @@ class LabelMouseListener extends MouseAdapter
 			}
 			if(isPressed)
 			{
-				colorGrid.labelPressed((JLabel)e.getSource());
+				Grid.labelPressed((JLabel)e.getSource());
 			}
-		}
-	}
-	@Override
-	public void mouseEntered(MouseEvent e)
-	{
-		if(isPressed)
-		{
-			colorGrid.labelPressed((JLabel)e.getSource());
 		}
 	}
 	@Override
@@ -313,4 +452,23 @@ class LabelMouseListener extends MouseAdapter
 		}
 		
 	}
+	@Override
+	public void mouseEntered(MouseEvent e)
+	{
+		if(isPressed)
+		{
+			Grid.labelPressed((JLabel)e.getSource());
+		}
+		else
+		{
+			Grid.showCurrentselect((JLabel)e.getSource());
+		}
+		
+	}
+	@Override
+	public void mouseExited(MouseEvent e)
+	{
+		Grid.hideCurrentselect((JLabel)e.getSource());
+	}
+	
 }

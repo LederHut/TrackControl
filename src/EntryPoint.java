@@ -1,13 +1,13 @@
 import java.awt.BorderLayout;
 import javax.swing.*;
 
-public class EntryPoint 
+public class EntryPoint
 {
-	static JFrame frame = new JFrame();
-	JPanel mainPanel = new JPanel();
-	JTabbedPane tabpane = new JTabbedPane(JTabbedPane.TOP,JTabbedPane.SCROLL_TAB_LAYOUT );
+	static JFrame Frame = new JFrame();
+	JPanel gridContainer = new JPanel();
+	JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP,JTabbedPane.SCROLL_TAB_LAYOUT );
 	
-	GridPlanner grid = null;
+	GridPlanner Grid = null;
 	
 	public EntryPoint() 
 	{
@@ -15,24 +15,24 @@ public class EntryPoint
 		int cols = 50;
 		int cellWidth = 32;
 		
-		grid = new GridPlanner(rows, cols, cellWidth);
+		Grid = new GridPlanner(rows, cols, cellWidth);
 
-        frame.setTitle("Track Planner");
-        frame.setSize(1000,500);
+        Frame.setTitle("Track Planner");
+        Frame.setSize(1000,500);
         
-        mainPanel.add(grid,BorderLayout.WEST);
-        JScrollPane scrollPane = new JScrollPane ( mainPanel,
+        gridContainer.add(Grid,BorderLayout.WEST);
+        JScrollPane scrollPane = new JScrollPane ( gridContainer,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-        tabpane.add(scrollPane,"Ich bin rot");
+        tabbedPane.add(scrollPane,"Track Layer");
         
-        frame.add(tabpane);
-        frame.add(grid.getThisToolbar(),BorderLayout.WEST);
+        Frame.add(tabbedPane);
+        Frame.add(Grid.getThisToolbar(),BorderLayout.WEST);
 	}
 	
 	public static void start ()
 	{
-        frame.setVisible(true);
+        Frame.setVisible(true);
 	}
 }

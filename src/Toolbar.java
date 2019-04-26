@@ -12,28 +12,35 @@ public class Toolbar extends JPanel implements KeyListener
 	 */
 	private static final long serialVersionUID = 8527007348870047047L;
 	GridPlanner Grid = null;
-	JButton b1 = null ,b2 = null;
-	JLabel railPreview = null;
+	JPanel blueprintPreview = null;  
+	JPanel railPreview = null;
 	ImageIcon railImage = null;
 	int currentblock;
 	
 	
 	public Toolbar (GridPlanner grid)
 	{
-		this.setPreferredSize(new Dimension(210,200));
+		this.setPreferredSize(new Dimension(210,500));
 		this.Grid = grid;
 		this.addKeyListener(this);
 		
-		railPreview = new JLabel();
-		railPreview.setPreferredSize(new Dimension(128,128));
+		 
+		
+		railPreview = new JPanel();
+		railPreview.setPreferredSize(new Dimension(200,200));
 		railPreview.setBorder(BorderFactory.createStrokeBorder(new BasicStroke(1.0f)));
 		
-		b1 = new JButton("Stright Rail");
-		b2 = new JButton("Corner Rail");
+		JScrollPane scrollPane = new JScrollPane ( railPreview,
+									               ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+									               ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		
-		add(b1);
-		add(b2);
-		add(railPreview);
+		blueprintPreview = new JPanel();
+		blueprintPreview.setLayout(new GridLayout());
+		blueprintPreview.setPreferredSize(new Dimension(200,200));
+		blueprintPreview.setBorder(BorderFactory.createStrokeBorder(new BasicStroke(1.0f)));
+		
+		add(scrollPane);
+		add(blueprintPreview);
 		setFocusable(true);
 	}
 	
@@ -48,41 +55,41 @@ public class Toolbar extends JPanel implements KeyListener
 	// E : used for the eraser "tool".
 	// 
 	// Right now only the key e and 1 are bound properly.
-	// The other keys will give of errors.
+	// The other keys will generate errors.
 	@Override
 	public void keyPressed(KeyEvent e) 
 	{
 		if(e.getKeyCode() == KeyEvent.VK_1)
 		{
-			Grid.setSelectedRail(3);
-			railPreview.setIcon(new ImageIcon(Grid.getCurrentRailImage().getImage().getScaledInstance(128, 128,  java.awt.Image.SCALE_SMOOTH)));
+			Grid.setSelectedRail(1);
+			Grid.showCurrentselect();
 		}
 		if(e.getKeyCode() == KeyEvent.VK_2)
 		{
-			Grid.setSelectedRail(4);
-			railPreview.setIcon(new ImageIcon(Grid.getCurrentRailImage().getImage().getScaledInstance(128, 128,  java.awt.Image.SCALE_SMOOTH)));
+			Grid.setSelectedRail(2);
+			Grid.showCurrentselect();
 		}
 		if(e.getKeyCode() == KeyEvent.VK_3)
 		{
-			Grid.setSelectedRail(5);
-			railPreview.setIcon(new ImageIcon(Grid.getCurrentRailImage().getImage().getScaledInstance(128, 128,  java.awt.Image.SCALE_SMOOTH)));
+			Grid.setSelectedRail(3);
+			Grid.showCurrentselect();
 		}
 		if(e.getKeyCode() == KeyEvent.VK_4)
 		{
-			Grid.setSelectedRail(6);
-			railPreview.setIcon(new ImageIcon(Grid.getCurrentRailImage().getImage().getScaledInstance(128, 128,  java.awt.Image.SCALE_SMOOTH)));
+			Grid.setSelectedRail(4);
+			Grid.showCurrentselect();
 		}
 		if(e.getKeyCode() == KeyEvent.VK_5)
 		{
-			Grid.setSelectedRail(7);
-			railPreview.setIcon(new ImageIcon(Grid.getCurrentRailImage().getImage().getScaledInstance(128, 128,  java.awt.Image.SCALE_SMOOTH)));
+			Grid.setSelectedRail(5);
+			Grid.showCurrentselect();
 		}
 		if(e.getKeyCode() == KeyEvent.VK_E)
 		{
 			Grid.setSelectedRail(0);
-			railPreview.setIcon(new ImageIcon(Grid.getCurrentRailImage().getImage().getScaledInstance(128, 128,  java.awt.Image.SCALE_SMOOTH)));
+			Grid.showCurrentselect();
 		}
-		if(e.getKeyCode() == KeyEvent.VK_R)
+		if(e.getKeyCode() == KeyEvent.VK_R && Grid.getSelectedRail() != 0)
 		{
 			if(Grid.getSelectedRailOrientation() == 3)
 			{
@@ -92,7 +99,7 @@ public class Toolbar extends JPanel implements KeyListener
 			{
 				Grid.setSelectedRailOrientation(Grid.getSelectedRailOrientation() + 1);
 			}
-			railPreview.setIcon(new ImageIcon(Grid.getCurrentRailImage().getImage().getScaledInstance(128, 128,  java.awt.Image.SCALE_SMOOTH)));
+			Grid.showCurrentselect();
 		}
 	}
 
