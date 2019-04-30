@@ -1,66 +1,92 @@
 import java.awt.BasicStroke;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+
 import java.util.Random;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 
-public class GridPlanner extends JPanel implements MouseWheelListener
+public class Grid extends JPanel implements MouseWheelListener ,KeyListener ,MouseListener
 {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -2317402967205059398L;
-	
+	private static final long serialVersionUID = -8460475293040995859L;
+
 	private int [][][] gridMetadata = new int [50][50][3];	// max number of cells is this capacity divided by 3.
 															// [x][y][0] saves the imageID of the label on that index.
 															// [x][y][1] saves the imageOrientation of the label on that index.
-													    	// [x][y][2] saves the ground of the respective image it uses.
-	private Toolbar toolbar = null;
+															// [x][y][2] saves the ground of the respective image it uses.
+	
+	private JPanel actualGrid = null;
 	private JLabel[][] myLabels;
 	private JLabel lastenteredLabel = null;
 	private int lastenteredLabelrow = 0;
 	private int lastenteredLabelcol = 0;
 	private ImageIcon[][][] orignalImages;					//stores the original images.
 	private ImageIcon[][][] scaledImages;
-	private int selectedRail = 0;
-	private int selectedRailOrientation = 0;
+	private int selected = 0;
+	private int selectedOrientation = 0;
 	
 	private double currentGridTileSize = 0;
 	
-	public GridPlanner(int rows, int cols, int cellWidth) 
-	{	
+	public Grid (int rows, int cols, int cellWidth , int imgLoader)
+	{
 		currentGridTileSize = cellWidth;
 		
-		toolbar =  new Toolbar(this);
+		actualGrid = new JPanel();
 		myLabels = new JLabel[rows][cols];
 		
-		orignalImages = new ImageIcon[5][3][4];
-		LoadImages();
-		
-		scaledImages = new ImageIcon[5][3][4];
-		scaleRailImages();
-		
-		
-		LabelMouseListener myListener = new LabelMouseListener(this);
-		Dimension labelPrefSize = new Dimension(cellWidth, cellWidth);
-		
-		setLayout(new GridLayout(rows, cols));
-		addMouseWheelListener(this);
-		
-		//Generates the grid
-		for(int col = 0; col < myLabels.length; col++)
+		LabelMouseListener labelMouseListener = null;
+		if(imgLoader == 1)
 		{
-			for(int row = 0; row < myLabels.length; row++)
-			{	
+			orignalImages = new ImageIcon[5][3][4];
+			loadRailImages();
+			scaledImages = new ImageIcon[5][3][4];
+			scaleRailImages();
+			labelMouseListener = new Tab1LabelMouseListener(this);
+		}
+		else if(imgLoader == 2)
+		{
+			orignalImages = new ImageIcon[5][3][4];
+			loadRailImages();
+			scaledImages = new ImageIcon[5][3][4];
+			scaleRailImages();
+			labelMouseListener = new Tab2LabelMouseListener(this);
+		}
+		else if(imgLoader == 3)
+		{
+			orignalImages = new ImageIcon[5][3][4];
+			loadRailImages();
+			scaledImages = new ImageIcon[5][3][4];
+			scaleRailImages();
+			labelMouseListener = new Tab3LabelMouseListener(this);
+		}
+		
+		setLayout(new GridLayout(1, 2));
+		addKeyListener(this);
+		addMouseListener(this);
+
+		actualGrid.setLayout(new GridLayout(rows, cols));
+		actualGrid.addMouseWheelListener(this);
+		
+		Dimension labelPrefSize = new Dimension(cellWidth, cellWidth);
+		//Generates the grid
+		for(int col = 0; col < myLabels.length; col++){
+			for(int row = 0; row < myLabels.length; row++){
+				
 				int  imageOrientation = rand_int(4);
 				int  groundImageID = rand_int(3);
 				
@@ -70,24 +96,27 @@ public class GridPlanner extends JPanel implements MouseWheelListener
 				
 				myLabel.setBorder(BorderFactory.createStrokeBorder(new BasicStroke(1.0f))); //// can be an option to turn it of or on as grid.
 				myLabel.setOpaque(true);
-				myLabel.addMouseListener(myListener);
+				myLabel.addMouseListener(labelMouseListener);
 				myLabel.setPreferredSize(labelPrefSize);
 				
-				add(myLabel);
+				actualGrid.add(myLabel);
 				myLabels[row][col] = myLabel;
 				UpdateMetadata(0, imageOrientation, groundImageID, row, col);
 				
 			}
 		}
 		
+        JScrollPane scrollPane = new JScrollPane ( actualGrid,
+									               ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+									               ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		
+		add(scrollPane);
 	}
-	
 	
 	/**
      * Loads all available and needed images.
      */
-	private void LoadImages()
+	private void loadRailImages()
 	{
 
 		//Ground 
@@ -174,7 +203,7 @@ public class GridPlanner extends JPanel implements MouseWheelListener
 			for(int row = 0; row < myLabels.length; row++){
 				if(label == myLabels[row][col])
 				{
-					if(selectedRail == 0)
+					if(selected == 0)
 					{
 						label.setIcon(scaledImages[gridMetadata[row][col][0]]
 												  [gridMetadata[row][col][2]]
@@ -182,13 +211,13 @@ public class GridPlanner extends JPanel implements MouseWheelListener
 					}
 					else
 					{
-						label.setIcon(scaledImages[selectedRail]
+						label.setIcon(scaledImages[selected]
 												  [gridMetadata[row][col][2]]
-								  	  			  [selectedRailOrientation]);
+								  	  			  [selectedOrientation]);
 					}
 					
-					UpdateMetadata(selectedRail,
-								   selectedRailOrientation,
+					UpdateMetadata(selected,
+								   selectedOrientation,
 								   row,
 								   col);
 					return;
@@ -338,9 +367,18 @@ public class GridPlanner extends JPanel implements MouseWheelListener
 			for(int row = 0; row < myLabels.length; row++){
 				if(label == myLabels[row][col])
 				{
-					label.setIcon(scaledImages[selectedRail]
-											  [gridMetadata[row][col][2]]
-											  [selectedRailOrientation]);
+					if(selected == 0)
+					{
+						label.setIcon(scaledImages[gridMetadata[row][col][0]]
+												  [gridMetadata[row][col][2]]
+								                  [gridMetadata[row][col][1]]);
+					}
+					else
+					{
+						label.setIcon(scaledImages[selected]
+								  				  [gridMetadata[row][col][2]]
+								  			      [selectedOrientation]);
+					}
 					
 					lastenteredLabel = label;
 					lastenteredLabelrow = row;
@@ -363,9 +401,9 @@ public class GridPlanner extends JPanel implements MouseWheelListener
      */
 	public void showCurrentselect()
 	{
-		lastenteredLabel.setIcon(scaledImages[selectedRail]
+		lastenteredLabel.setIcon(scaledImages[selected]
 								  			 [gridMetadata[lastenteredLabelrow][lastenteredLabelcol][2]]
-								  			 [selectedRailOrientation]);
+								  			 [selectedOrientation]);
 	}
 	//-----------------------------------------------------------------------
 
@@ -383,20 +421,95 @@ public class GridPlanner extends JPanel implements MouseWheelListener
 			}
 		}
 	}
-	public Toolbar getThisToolbar()
+	
+
+	//KeyListner interface
+	//
+	// Handles the keyboard input for the toolbar.
+	// Numeric keys change the selected building block(rail).
+	// E : used for the eraser "tool".
+	// 
+	// Right now only the key e is bound properly.
+	// The other keys will generate errors.
+	@Override
+	public void keyPressed(KeyEvent e) 
 	{
-		return this.toolbar;
+		if(e.getKeyCode() == KeyEvent.VK_1)
+		{
+			setSelectedRail(1);
+			showCurrentselect();
+		}
+		if(e.getKeyCode() == KeyEvent.VK_2)
+		{
+			setSelectedRail(2);
+			showCurrentselect();
+		}
+		if(e.getKeyCode() == KeyEvent.VK_3)
+		{
+			setSelectedRail(3);
+			showCurrentselect();
+		}
+		if(e.getKeyCode() == KeyEvent.VK_4)
+		{
+			setSelectedRail(4);
+			showCurrentselect();
+		}
+		if(e.getKeyCode() == KeyEvent.VK_5)
+		{
+			setSelectedRail(5);
+			showCurrentselect();
+		}
+		if(e.getKeyCode() == KeyEvent.VK_E)
+		{
+			setSelectedRail(0);
+			showCurrentselect();
+		}
+		if(e.getKeyCode() == KeyEvent.VK_R && getSelectedRail() != 0)
+		{
+			if(getSelectedRailOrientation() == 3)
+			{
+				setSelectedRailOrientation(0);
+			}
+			else
+			{
+				setSelectedRailOrientation(getSelectedRailOrientation() + 1);
+			}
+			showCurrentselect();
+		}
 	}
+	@Override
+	public void keyReleased(KeyEvent e) {}
+	@Override
+	public void keyTyped(KeyEvent e) {}
+	//-----------------------------------------------------------------------
+	
+	//MouseListner interface
+	//
+	@Override
+	public void mouseClicked(MouseEvent e) {}
+	@Override
+	public void mousePressed(MouseEvent e) {}
+	@Override
+	public void mouseReleased(MouseEvent e) {}
+	@Override
+	public void mouseExited(MouseEvent e) {}
+	
+	@Override
+	public void mouseEntered(MouseEvent e)
+	{
+		requestFocusInWindow();
+	}
+	//-----------------------------------------------------------------------
 	
 	//Get'r and set'r functions for selectedRail
 	//
 	public void setSelectedRail(int num)
 	{
-		selectedRail = num;
+		selected = num;
 	}
 	public int getSelectedRail()
 	{
-		return selectedRail;
+		return selected;
 	}
 	//-----------------------------------------------------------------------
 	
@@ -404,71 +517,13 @@ public class GridPlanner extends JPanel implements MouseWheelListener
 	//
 	public void setSelectedRailOrientation(int orientation)
 	{
-		selectedRailOrientation = orientation;
+		selectedOrientation = orientation;
 	}
 	public int getSelectedRailOrientation()
 	{
-		return selectedRailOrientation;
+		return selectedOrientation;
 	}
 	//-----------------------------------------------------------------------
-}
 
-//Handles all mouse actions performed on the JLable's allocated in the grid
-class LabelMouseListener extends MouseAdapter 
-{
-	private GridPlanner Grid;
-	private boolean isPressed = false; //secures that only when the mouse IS pressed that the icon gets replaced
-	
-	public LabelMouseListener(GridPlanner grid) 
-	{
-		this.Grid = grid;
-	}
-	
-	//When the left mouse button is pressed the selected image is set as the JLabels's icon
-	@Override
-	public void mousePressed(MouseEvent e)
-	{
-		if(SwingUtilities.isLeftMouseButton(e))
-		{
-			if (e.getID() == MouseEvent.MOUSE_PRESSED && !isPressed) 
-			{
-				isPressed = true;
-			}
-			if(isPressed)
-			{
-				Grid.labelPressed((JLabel)e.getSource());
-			}
-		}
-	}
-	@Override
-	public void mouseReleased(MouseEvent e)
-	{
-		if(SwingUtilities.isLeftMouseButton(e))
-		{
-			if(e.getID() == MouseEvent.MOUSE_RELEASED && isPressed)
-			{
-				isPressed = false;
-			}
-		}
-		
-	}
-	@Override
-	public void mouseEntered(MouseEvent e)
-	{
-		if(isPressed)
-		{
-			Grid.labelPressed((JLabel)e.getSource());
-		}
-		else
-		{
-			Grid.showCurrentselect((JLabel)e.getSource());
-		}
-		
-	}
-	@Override
-	public void mouseExited(MouseEvent e)
-	{
-		Grid.hideCurrentselect((JLabel)e.getSource());
-	}
-	
+
 }

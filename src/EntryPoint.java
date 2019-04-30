@@ -7,7 +7,7 @@ public class EntryPoint
 	JPanel gridContainer = new JPanel();
 	JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP,JTabbedPane.SCROLL_TAB_LAYOUT );
 	
-	GridPlanner Grid = null;
+	TrackLayer TLGrid = null;
 	
 	public EntryPoint() 
 	{
@@ -15,20 +15,23 @@ public class EntryPoint
 		int cols = 50;
 		int cellWidth = 32;
 		
-		Grid = new GridPlanner(rows, cols, cellWidth);
-
+		tabbedPane.setFocusable(true);
+		
+		TLGrid = new TrackLayer(rows, cols, cellWidth);
+		
+		//Frame.addKeyListener(TLGrid);
+		
         Frame.setTitle("Track Planner");
         Frame.setSize(1000,500);
-        
-        gridContainer.add(Grid,BorderLayout.WEST);
-        JScrollPane scrollPane = new JScrollPane ( gridContainer,
-                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-        tabbedPane.add(scrollPane,"Track Layer");
+        tabbedPane.add(TLGrid,"Track Layer");
+        
         
         Frame.add(tabbedPane);
-        Frame.add(Grid.getThisToolbar(),BorderLayout.WEST);
+        //tabbedPane.setFocusable(true);
+        //Frame.setFocusable(true);
+        
+        //Frame.add(TLGrid.getThisToolbar(),BorderLayout.WEST);
 	}
 	
 	public static void start ()
