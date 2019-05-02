@@ -1,9 +1,9 @@
 import java.awt.BasicStroke;
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
@@ -25,10 +25,10 @@ public class Grid extends JPanel implements MouseWheelListener ,KeyListener ,Mou
 	 */
 	private static final long serialVersionUID = -8460475293040995859L;
 
-	private int [][][] gridMetadata = new int [50][50][3];	// max number of cells is this capacity divided by 3.
-															// [x][y][0] saves the imageID of the label on that index.
-															// [x][y][1] saves the imageOrientation of the label on that index.
-															// [x][y][2] saves the ground of the respective image it uses.
+	private int [][][] gridMetadata = null;	// max number of cells is this capacity divided by 3.
+											// [x][y][0] saves the imageID of the label on that index.
+											// [x][y][1] saves the imageOrientation of the label on that index.
+											// [x][y][2] saves the ground of the respective image it uses.
 	
 	private JPanel actualGrid = null;
 	private JLabel[][] myLabels;
@@ -39,13 +39,16 @@ public class Grid extends JPanel implements MouseWheelListener ,KeyListener ,Mou
 	private ImageIcon[][][] scaledImages;
 	private int selected = 0;
 	private int selectedOrientation = 0;
+	private int labelWidth = 0;
 	
 	private double currentGridTileSize = 0;
 	
 	public Grid (int rows, int cols, int cellWidth , int imgLoader)
 	{
+		labelWidth = cellWidth;
 		currentGridTileSize = cellWidth;
 		
+		gridMetadata = new int [rows][cols][3];
 		actualGrid = new JPanel();
 		myLabels = new JLabel[rows][cols];
 		
@@ -75,7 +78,7 @@ public class Grid extends JPanel implements MouseWheelListener ,KeyListener ,Mou
 			labelMouseListener = new Tab3LabelMouseListener(this);
 		}
 		
-		setLayout(new GridLayout(1, 2));
+		setLayout(new BorderLayout());
 		addKeyListener(this);
 		addMouseListener(this);
 
@@ -94,7 +97,7 @@ public class Grid extends JPanel implements MouseWheelListener ,KeyListener ,Mou
 														[groundImageID]
 														[imageOrientation]);
 				
-				myLabel.setBorder(BorderFactory.createStrokeBorder(new BasicStroke(1.0f))); //// can be an option to turn it of or on as grid.
+				//myLabel.setBorder(BorderFactory.createStrokeBorder(new BasicStroke(1.0f))); //// can be an option to turn it of or on as grid.
 				myLabel.setOpaque(true);
 				myLabel.addMouseListener(labelMouseListener);
 				myLabel.setPreferredSize(labelPrefSize);
@@ -105,12 +108,6 @@ public class Grid extends JPanel implements MouseWheelListener ,KeyListener ,Mou
 				
 			}
 		}
-		
-        JScrollPane scrollPane = new JScrollPane ( actualGrid,
-									               ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-									               ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		
-		add(scrollPane);
 	}
 	
 	/**
@@ -144,43 +141,43 @@ public class Grid extends JPanel implements MouseWheelListener ,KeyListener ,Mou
 		//Straight rail
 		//
 		//Variation one
-		orignalImages[1][0][0] = new ImageIcon("src/Images/Prototype_G0_R1.png");
-		orignalImages[1][0][1] = new ImageIcon("src/Images/Prototype_G0_R2.png");
-		orignalImages[1][0][2] = new ImageIcon("src/Images/Prototype_G0_R3.png");
-		orignalImages[1][0][3] = new ImageIcon("src/Images/Prototype_G0_R4.png");
+		orignalImages[1][0][0] = new ImageIcon("src/Images/BrockenRail_straight_1_1.png");
+		orignalImages[1][0][1] = new ImageIcon("src/Images/BrockenRail_straight_1_2.png");
+		orignalImages[1][0][2] = new ImageIcon("src/Images/BrockenRail_straight_1_3.png");
+		orignalImages[1][0][3] = new ImageIcon("src/Images/BrockenRail_straight_1_4.png");
 		//
 		//Variation two
-		orignalImages[1][1][0] = new ImageIcon("src/Images/Prototype_G0_R1.png");
-		orignalImages[1][1][1] = new ImageIcon("src/Images/Prototype_G0_R2.png");
-		orignalImages[1][1][2] = new ImageIcon("src/Images/Prototype_G0_R3.png");
-		orignalImages[1][1][3] = new ImageIcon("src/Images/Prototype_G0_R4.png");
+		orignalImages[1][1][0] = new ImageIcon("src/Images/BrockenRail_straight_2_1.png");
+		orignalImages[1][1][1] = new ImageIcon("src/Images/BrockenRail_straight_2_2.png");
+		orignalImages[1][1][2] = new ImageIcon("src/Images/BrockenRail_straight_2_3.png");
+		orignalImages[1][1][3] = new ImageIcon("src/Images/BrockenRail_straight_2_4.png");
 		//
 		//Variation three
-		orignalImages[1][2][0] = new ImageIcon("src/Images/Prototype_G0_R1.png");
-		orignalImages[1][2][1] = new ImageIcon("src/Images/Prototype_G0_R2.png");
-		orignalImages[1][2][2] = new ImageIcon("src/Images/Prototype_G0_R3.png");
-		orignalImages[1][2][3] = new ImageIcon("src/Images/Prototype_G0_R4.png");
+		orignalImages[1][2][0] = new ImageIcon("src/Images/BrockenRail_straight_3_1.png");
+		orignalImages[1][2][1] = new ImageIcon("src/Images/BrockenRail_straight_3_2.png");
+		orignalImages[1][2][2] = new ImageIcon("src/Images/BrockenRail_straight_3_3.png");
+		orignalImages[1][2][3] = new ImageIcon("src/Images/BrockenRail_straight_3_4.png");
 		//-----------------------------------------------------------------------
 		
 		//Corner rail
 		//
 		//Variation one
-		orignalImages[2][0][0] = new ImageIcon("src/Images/Corner_Prototype_R_0.png");
-		orignalImages[2][0][1] = new ImageIcon("src/Images/Corner_Prototype_R_1.png");
-		orignalImages[2][0][2] = new ImageIcon("src/Images/Corner_Prototype_R_3.png");
-		orignalImages[2][0][3] = new ImageIcon("src/Images/Corner_Prototype_R_2.png");
+		orignalImages[2][0][0] = new ImageIcon("src/Images/Brokenrail_diagon_1.png");
+		orignalImages[2][0][1] = new ImageIcon("src/Images/Brokenrail_diagon_2.png");
+		orignalImages[2][0][2] = new ImageIcon("src/Images/Brokenrail_diagon_3.png");
+		orignalImages[2][0][3] = new ImageIcon("src/Images/Brokenrail_diagon_4.png");
 		//
 		//Variation two
-		orignalImages[2][1][0] = new ImageIcon("src/Images/Corner_Prototype_R_0.png");
-		orignalImages[2][1][1] = new ImageIcon("src/Images/Corner_Prototype_R_1.png");
-		orignalImages[2][1][2] = new ImageIcon("src/Images/Corner_Prototype_R_3.png");
-		orignalImages[2][1][3] = new ImageIcon("src/Images/Corner_Prototype_R_2.png");
+		orignalImages[2][1][0] = new ImageIcon("src/Images/Brokenrail_diagon_1.png");
+		orignalImages[2][1][1] = new ImageIcon("src/Images/Brokenrail_diagon_2.png");
+		orignalImages[2][1][2] = new ImageIcon("src/Images/Brokenrail_diagon_3.png");
+		orignalImages[2][1][3] = new ImageIcon("src/Images/Brokenrail_diagon_4.png");
 		//
 		//Variation three
-		orignalImages[2][2][0] = new ImageIcon("src/Images/Corner_Prototype_R_0.png");
-		orignalImages[2][2][1] = new ImageIcon("src/Images/Corner_Prototype_R_1.png");
-		orignalImages[2][2][2] = new ImageIcon("src/Images/Corner_Prototype_R_3.png");
-		orignalImages[2][2][3] = new ImageIcon("src/Images/Corner_Prototype_R_2.png");
+		orignalImages[2][2][0] = new ImageIcon("src/Images/Brokenrail_diagon_1.png");
+		orignalImages[2][2][1] = new ImageIcon("src/Images/Brokenrail_diagon_2.png");
+		orignalImages[2][2][2] = new ImageIcon("src/Images/Brokenrail_diagon_3.png");
+		orignalImages[2][2][3] = new ImageIcon("src/Images/Brokenrail_diagon_4.png");
 		//-----------------------------------------------------------------------
 		
 		//orignalImages[5][0] = new ImageIcon("src/Cross_Junction.png");
@@ -208,6 +205,12 @@ public class Grid extends JPanel implements MouseWheelListener ,KeyListener ,Mou
 						label.setIcon(scaledImages[gridMetadata[row][col][0]]
 												  [gridMetadata[row][col][2]]
 								                  [gridMetadata[row][col][1]]);
+					}
+					else if(selected == 1)
+					{
+						label.setIcon(scaledImages[selected]
+								  				  [rand_int(3)]
+				  	  			                  [selectedOrientation]);
 					}
 					else
 					{
@@ -254,9 +257,9 @@ public class Grid extends JPanel implements MouseWheelListener ,KeyListener ,Mou
 		
 		currentGridTileSize *= zoomscale;
 		
-		if(currentGridTileSize <= 16)
+		if(currentGridTileSize <= labelWidth)
 		{
-			currentGridTileSize = 16;
+			currentGridTileSize = labelWidth;
 		}
 		else if(currentGridTileSize >= 128)
 		{
@@ -524,6 +527,14 @@ public class Grid extends JPanel implements MouseWheelListener ,KeyListener ,Mou
 		return selectedOrientation;
 	}
 	//-----------------------------------------------------------------------
+	
+	public void addGrid()
+	{
+	   JScrollPane scrollPane = new JScrollPane ( actualGrid,
+									              ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+									              ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
+	   add(scrollPane);
+	}
 
 }
