@@ -1,4 +1,5 @@
 import java.awt.BasicStroke;
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 
 import javax.swing.BorderFactory;
@@ -15,13 +16,14 @@ public class LogicPlanner extends Grid
 	
 	public LogicPlanner (int rows, int cols, int cellWidth, int imgLoader)
 	{
-		super(rows, cols, cellWidth, imgLoader);
+		super(rows, cols, cellWidth);
 		
 		Toolbar = new JPanel();
-		Toolbar.setPreferredSize(new Dimension(200, 200));
+		Toolbar.setPreferredSize(new Dimension(250, 200));
 		Toolbar.setBorder(BorderFactory.createStrokeBorder(new BasicStroke(1.0f)));
-
-		super.add(Toolbar);
+		
+		super.initGrid(new Tab2LabelEventListener());
+		super.add(Toolbar,BorderLayout.WEST);
 		super.addGrid();
 		
 	}

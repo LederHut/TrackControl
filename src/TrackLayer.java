@@ -16,12 +16,13 @@ public class TrackLayer extends Grid
 	
 	public TrackLayer(int rows, int cols, int cellWidth, int imgLoader) 
 	{	
-		super(rows, cols, cellWidth, imgLoader);
+		super(rows, cols, cellWidth);
 		
 		Toolbar = new JPanel();
-		Toolbar.setPreferredSize(new Dimension(100, 50));
+		Toolbar.setPreferredSize(new Dimension(150, 50));
 		Toolbar.setBorder(BorderFactory.createStrokeBorder(new BasicStroke(1.0f)));
-
+		
+		super.initGrid(new Tab1LabelEventListener());
 		super.add(Toolbar,BorderLayout.WEST);
 		super.addGrid();
 	}

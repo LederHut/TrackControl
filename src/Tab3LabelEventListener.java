@@ -1,15 +1,20 @@
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
-class LabelMouseListener extends MouseAdapter 
+class Tab3LabelEventListener extends MouseAdapter implements KeyListener
 {
 	private Grid Grid;
 	private boolean isPressed = false; //secures that only when the mouse IS pressed that the icon gets replaced
 	
-	public LabelMouseListener(Grid grid) 
+	public Tab3LabelEventListener() 
+	{
+	}
+	public void setGrid(Grid grid)
 	{
 		this.Grid = grid;
 	}
@@ -60,5 +65,24 @@ class LabelMouseListener extends MouseAdapter
 	{
 		Grid.hideCurrentselect((JLabel)e.getSource());
 	}
+	
+	//KeyListner interface
+	//
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void keyPressed(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	//-----------------------------------------------------------------------
 	
 }

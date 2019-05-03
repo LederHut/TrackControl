@@ -15,12 +15,13 @@ public class Simulator extends Grid
 	
 	public Simulator (int rows, int cols, int cellWidth, int imgLoader)
 	{
-		super(rows, cols, cellWidth, imgLoader);
+		super(rows, cols, cellWidth);
 		
 		Toolbar = new JPanel();
 		Toolbar.setPreferredSize(new Dimension(200, 200));
 		Toolbar.setBorder(BorderFactory.createStrokeBorder(new BasicStroke(1.0f)));
 
+		super.initGrid(new Tab3LabelEventListener());
 		super.add(Toolbar);
 		super.addGrid();
 	}
