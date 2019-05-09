@@ -57,6 +57,10 @@ public class Tab1LabelEventListener extends MouseAdapter implements KeyListener
 		else
 		{
 			Grid.showCurrentselect((JLabel)e.getSource());
+			if(!Grid.isFocusOwner())
+			{
+				Grid.requestFocusInWindow();
+			}
 		}
 		
 	}
@@ -89,7 +93,7 @@ public class Tab1LabelEventListener extends MouseAdapter implements KeyListener
 		}
 		if(e.getKeyCode() == KeyEvent.VK_3)
 		{
-			Grid.setSelect(3);
+			Grid.setSelect(7);
 			Grid.showCurrentselect();
 		}
 		if(e.getKeyCode() == KeyEvent.VK_4)

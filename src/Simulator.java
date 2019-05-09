@@ -13,7 +13,7 @@ public class Simulator extends Grid
 	
 	JPanel Toolbar = null;
 	
-	public Simulator (int rows, int cols, int cellWidth, int imgLoader)
+	public Simulator (int rows, int cols, int cellWidth)
 	{
 		super(rows, cols, cellWidth);
 		

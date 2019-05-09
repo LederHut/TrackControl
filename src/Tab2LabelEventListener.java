@@ -9,10 +9,13 @@ import javax.swing.SwingUtilities;
 class Tab2LabelEventListener extends MouseAdapter implements KeyListener
 {
 	private Grid Grid;
+	private LogicPlanner LPref;
 	private boolean isPressed = false; //secures that only when the mouse IS pressed that the icon gets replaced
+	private boolean isFree = true;
 	
-	public Tab2LabelEventListener() 
+	public Tab2LabelEventListener(LogicPlanner lp) 
 	{
+		LPref = lp;
 	}
 	public void setGrid(Grid grid)
 	{
@@ -32,6 +35,7 @@ class Tab2LabelEventListener extends MouseAdapter implements KeyListener
 			if(isPressed)
 			{
 				Grid.labelPressed((JLabel)e.getSource());
+				LPref.cacheCoordinats(Grid.getlastenteredLabelrow(), Grid.getlastenteredLabelcol());
 			}
 		}
 	}
@@ -43,6 +47,12 @@ class Tab2LabelEventListener extends MouseAdapter implements KeyListener
 			if(e.getID() == MouseEvent.MOUSE_RELEASED && isPressed)
 			{
 				isPressed = false;
+				LPref.createLogicBlock();
+			}
+			else	
+			{
+				LPref.resetCache();
+				isPressed = false;
 			}
 		}
 		
@@ -53,10 +63,15 @@ class Tab2LabelEventListener extends MouseAdapter implements KeyListener
 		if(isPressed)
 		{
 			Grid.labelPressed((JLabel)e.getSource());
+			LPref.cacheCoordinats(Grid.getlastenteredLabelrow(), Grid.getlastenteredLabelcol());
 		}
 		else
 		{
 			Grid.showCurrentselect((JLabel)e.getSource());
+			if(!Grid.isFocusOwner())
+			{
+				Grid.requestFocusInWindow();
+			}
 		}
 		
 	}
@@ -71,12 +86,25 @@ class Tab2LabelEventListener extends MouseAdapter implements KeyListener
 	@Override
 	public void keyTyped(KeyEvent e) {
 		// TODO Auto-generated method stub
-		
 	}
 	@Override
-	public void keyPressed(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
+	public void keyPressed(KeyEvent e) 
+	{
+		if(e.getKeyCode() == KeyEvent.VK_1)
+		{
+			Grid.setSelect(8);
+			Grid.showCurrentselect();
+		}
+		if(e.getKeyCode() == KeyEvent.VK_2)
+		{
+			Grid.setSelect(11);
+			Grid.showCurrentselect();
+		}
+		if(e.getKeyCode() == KeyEvent.VK_3)
+		{
+			Grid.setSelect(14);
+			Grid.showCurrentselect();
+		}
 	}
 	@Override
 	public void keyReleased(KeyEvent e) {

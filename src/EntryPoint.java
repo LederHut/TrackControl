@@ -17,13 +17,13 @@ public class EntryPoint
 		
 		tabbedPane.setFocusable(true);
 		
-		TLGrid = new TrackLayer(rows, cols, cellWidth, 1);
-		LPGrid = new LogicPlanner(rows, cols, cellWidth, 2);
-		SimGrid = new Simulator(rows, cols, cellWidth, 3);
+		TLGrid = new TrackLayer(rows, cols, cellWidth);
+		LPGrid = new LogicPlanner(rows, cols, cellWidth, TLGrid);
+		SimGrid = new Simulator(rows, cols, cellWidth);
 		
         Frame.setTitle("Track Planner");
         Frame.setSize(1000,500);
-
+        
         tabbedPane.add(TLGrid,"Track Layer");
         tabbedPane.add(LPGrid,"Logic Planner");
         tabbedPane.add(SimGrid,"Simulator");
