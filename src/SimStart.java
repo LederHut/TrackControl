@@ -18,7 +18,7 @@ public class SimStart implements ActionListener {
 	
 	public void actionPerformed(ActionEvent e) 
 	{
-		for(int i = 0; SimGrid.trains[i] != null; i ++)
+		for(int i = 1; SimGrid.trains[i] != null; i ++)
 		{
 			System.out.print("Sim start's now");
 			

@@ -87,9 +87,9 @@ public class Train
 		closedlist.add(startTile);
 		
 		//actual pathfinding algorithm
-		while(closedlist.get(closedlist.size()).pos !=  end || !openlist.isEmpty())
+		while(closedlist.get(closedlist.size()-1).pos !=  end && !openlist.isEmpty())
 		{
-			Tile thistile = new Tile(null, null, 1000, 1000);
+			Tile thistile = new Tile(null, null, 10000, 10000);
 			
 			for(Tile t : openlist)
 			{
@@ -98,8 +98,6 @@ public class Train
 					thistile = t;
 				}
 			}
-			
-			Tile thisparent = thistile.parent;
 			
 			int thisx = thistile.pos.x,
 				thisy = thistile.pos.y;
@@ -110,7 +108,7 @@ public class Train
 			{
 				if(positions.get(i).y == thisy -1 && positions.get(i).x == thisx)
 				{
-					Tile t = new Tile(positions.get(i), thisparent, hz, h);
+					Tile t = new Tile(positions.get(i), thistile, hz + thistile.G, h);
 					if(!openlist.contains(t))
 					{
 						openlist.add(t);
@@ -120,7 +118,7 @@ public class Train
 				}
 				else if(positions.get(i).y == thisy +1 && positions.get(i).x == thisx)
 				{
-					Tile t = new Tile(positions.get(i), thisparent, hz, h);
+					Tile t = new Tile(positions.get(i), thistile, hz + thistile.G, h);
 					if(!openlist.contains(t))
 					{
 						openlist.add(t);
@@ -130,7 +128,7 @@ public class Train
 				}
 				else if(positions.get(i).x == thisx -1 && positions.get(i).y == thisy)
 				{
-					Tile t = new Tile(positions.get(i), thisparent, hz, h);
+					Tile t = new Tile(positions.get(i), thistile, hz + thistile.G, h);
 					if(!openlist.contains(t))
 					{
 						openlist.add(t);
@@ -140,7 +138,7 @@ public class Train
 				}
 				else if(positions.get(i).x == thisx +1 && positions.get(i).y == thisy)
 				{
-					Tile t = new Tile(positions.get(i), thisparent, hz, h);
+					Tile t = new Tile(positions.get(i), thistile, hz + thistile.G, h);
 					if(!openlist.contains(t))
 					{
 						openlist.add(t);
@@ -153,7 +151,7 @@ public class Train
 			openlist.remove(thistile);
 		}
 		
-		Tile endTile = closedlist.get(closedlist.size());
+		Tile endTile = closedlist.get(closedlist.size()-1);
 		
 		while(endTile.parent != null)
 		{
@@ -194,7 +192,7 @@ class Tile
 	}
 	public Tile(Vector2i pos, Tile parent, int g, int h)
 	{
-		this.pos = pos;
+		this.pos = pos; 
 		this.parent = parent;
 		G = g;
 		H = h;

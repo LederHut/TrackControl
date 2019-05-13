@@ -440,7 +440,15 @@ public class Grid extends JPanel implements MouseWheelListener ,MouseListener
 	//
 	public void UpdateMetadata(Train t)
 	{
-			gridMetadata[t.trainLocation[0][0]][t.trainLocation[0][1]][3] = t.trainID;
+		int x1 = t.trainLocation[0][0], y1 = t.trainLocation[0][1],
+			x2 = t.trainLocation[1][0], y2 = t.trainLocation[1][1],
+			x3 = t.trainLocation[2][0], y3 = t.trainLocation[2][1];
+		
+			gridMetadata[x1][y1][3] = t.trainID;
+			
+			myLabels[x1][y1].setIcon(new ImageIcon(mergeImages(scaledImages[gridMetadata[x1][y1][0]][gridMetadata[x1][y1][1]].getImage(),t.trainImages[0].getImage())));
+			myLabels[x2][y2].setIcon(new ImageIcon(mergeImages(scaledImages[gridMetadata[x2][y2][0]][gridMetadata[x2][y2][1]].getImage(),t.trainImages[1].getImage())));
+			myLabels[x3][y3].setIcon(new ImageIcon(mergeImages(scaledImages[gridMetadata[x3][y3][0]][gridMetadata[x3][y3][1]].getImage(),t.trainImages[2].getImage())));
 	}
 	//-----------------------------------------------------------------------
 	

@@ -11,8 +11,8 @@ public class EntryPoint
 	
 	public EntryPoint() 
 	{
-		int rows = 100;
-		int cols = 100;
+		int rows = 10;
+		int cols = 10;
 		int cellWidth = 16;
 		
 		tabbedPane.setFocusable(true);
