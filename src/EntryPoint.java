@@ -19,7 +19,7 @@ public class EntryPoint
 		
 		TLGrid = new TrackLayer(rows, cols, cellWidth);
 		LPGrid = new LogicPlanner(rows, cols, cellWidth, TLGrid);
-		SimGrid = new Simulator(rows, cols, cellWidth);
+		SimGrid = new Simulator(rows, cols, cellWidth, LPGrid);
 		
         Frame.setTitle("Track Planner");
         Frame.setSize(1000,500);

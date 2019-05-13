@@ -34,49 +34,45 @@ public class Grid extends JPanel implements MouseWheelListener ,MouseListener
 											// [x][y][0] saves the imageID of the label on that index.
 											// [x][y][1] saves the imageOrientation of the label on that index.
 											// [x][y][2] saves the blockID of the label on that index.
+											// [x][y][3] saves the trainstopID of the label on that index.
+											// [x][y][4] saves the trainID of the label on that index.
 	
 	private JPanel actualGrid = null;
 	private JLabel[][] myLabels;
 	private JLabel lastenteredLabel = null;
-	private int lastenteredLabelrow = 0;
 	private int lastenteredLabelcol = 0;
+	private int lastenteredLabelrow = 0;
 	private ImageIcon[][] orignalImages;					//stores the original images.
 	private ImageIcon[][] scaledImages;
 	private int selected = 0;
 	private int selectedOrientation = 0;
-	private int maxRows = 0;
-	private int maxCols = 0;
+	public static int maxCols = 0;
+	public static int maxRows = 0;
 	
 	
-	private final int allImages = 20;
-	//private final int TLImages = 8;
-	//private final int LPImages = 5;
+	private final int allImages = 10;
 	
 	private double currentGridTileSize = 0;
 	
-	
-	
-	public Grid (int rows, int cols, int cellWidth)
+	public Grid (int cols, int rows, int cellWidth)
 	{
 		currentGridTileSize = cellWidth;
-		maxRows = rows;
 		maxCols = cols;
+		maxRows = rows;
 		
-		gridMetadata = new int [rows][cols][3];
+		gridMetadata = new int [cols][rows][5];
 		actualGrid = new JPanel();
-		myLabels = new JLabel[rows][cols];
+		myLabels = new JLabel[cols][rows];
 		
 		orignalImages = new ImageIcon[allImages][4];
-		loadRailImages();
-		createLogicImages();
-		loadLogicImages();
+		loadImages();
 		scaledImages = new ImageIcon[allImages][4];
 		scaleRailImages();
 		
 		setLayout(new BorderLayout());
 		addMouseListener(this);
 
-		actualGrid.setLayout(new GridLayout(rows, cols));
+		actualGrid.setLayout(new GridLayout(cols, rows));
 		actualGrid.addMouseWheelListener(this);
 	}
 	//Grid init
@@ -87,8 +83,8 @@ public class Grid extends JPanel implements MouseWheelListener ,MouseListener
 		labelMouseListener.setGrid(this);
 		Dimension labelPrefSize = new Dimension((int)currentGridTileSize, (int)currentGridTileSize);
 		//Generates the grid
-		for(int col = 0; col < myLabels.length; col++){
-			for(int row = 0; row < myLabels.length; row++){
+		for(int row = 0; row < myLabels.length; row++){
+			for(int col = 0; col < myLabels.length; col++){
 				
 				int  imageOrientation = rand_int(0,4);
 				int  ImageID = rand_int(0,3);
@@ -102,8 +98,8 @@ public class Grid extends JPanel implements MouseWheelListener ,MouseListener
 				myLabel.setPreferredSize(labelPrefSize);
 				
 				actualGrid.add(myLabel);
-				myLabels[row][col] = myLabel;
-				UpdateMetadata(ImageID, imageOrientation, row, col);
+				myLabels[col][row] = myLabel;
+				UpdateMetadata(ImageID, imageOrientation, col, row);
 				
 			}
 		}
@@ -116,8 +112,8 @@ public class Grid extends JPanel implements MouseWheelListener ,MouseListener
 		labelMouseListener.setGrid(this);
 		Dimension labelPrefSize = new Dimension((int)currentGridTileSize, (int)currentGridTileSize);
 		//Generates the grid
-		for(int col = 0; col < myLabels.length; col++){
-			for(int row = 0; row < myLabels.length; row++){
+		for(int row = 0; row < myLabels.length; row++){
+			for(int col = 0; col < myLabels.length; col++){
 				
 				int  imageOrientation = rand_int(0,4);
 				int  ImageID = rand_int(0,3);
@@ -131,8 +127,8 @@ public class Grid extends JPanel implements MouseWheelListener ,MouseListener
 				myLabel.setPreferredSize(labelPrefSize);
 				
 				actualGrid.add(myLabel);
-				myLabels[row][col] = myLabel;
-				UpdateMetadata(ImageID, imageOrientation, row, col);
+				myLabels[col][row] = myLabel;
+				UpdateMetadata(ImageID, imageOrientation, col, row);
 				
 			}
 		}
@@ -145,8 +141,8 @@ public class Grid extends JPanel implements MouseWheelListener ,MouseListener
 		labelMouseListener.setGrid(this);
 		Dimension labelPrefSize = new Dimension((int)currentGridTileSize, (int)currentGridTileSize);
 		//Generates the grid
-		for(int col = 0; col < myLabels.length; col++){
-			for(int row = 0; row < myLabels.length; row++){
+		for(int row = 0; row < myLabels.length; row++){
+			for(int col = 0; col < myLabels.length; col++){
 				
 				int  imageOrientation = rand_int(0,4);
 				int  ImageID = rand_int(0,3);
@@ -160,8 +156,8 @@ public class Grid extends JPanel implements MouseWheelListener ,MouseListener
 				myLabel.setPreferredSize(labelPrefSize);
 				
 				actualGrid.add(myLabel);
-				myLabels[row][col] = myLabel;
-				UpdateMetadata(ImageID, imageOrientation, row, col);
+				myLabels[col][row] = myLabel;
+				UpdateMetadata(ImageID, imageOrientation, col, row);
 				
 			}
 		}
@@ -171,7 +167,7 @@ public class Grid extends JPanel implements MouseWheelListener ,MouseListener
 	/**
      * Loads all available and needed images.
      */
-	private void loadRailImages()
+	private void loadImages()
 	{
 
 		//Ground 
@@ -244,13 +240,13 @@ public class Grid extends JPanel implements MouseWheelListener ,MouseListener
 		orignalImages[8][3] = new ImageIcon("src/Images/Punkt_mit_Punkt.png");
 		//-----------------------------------------------------------------------
 		
-		//The line that marks the inside of an logicblock
+		//The trainstop mark
 		//
 		//Variation one
-		orignalImages[9][0] = new ImageIcon("src/Images/Punkt_mit_Punkt.png");
-		orignalImages[9][1] = new ImageIcon("src/Images/Punkt_mit_Punkt.png");
-		orignalImages[9][2] = new ImageIcon("src/Images/Punkt_mit_Punkt.png");
-		orignalImages[9][3] = new ImageIcon("src/Images/Punkt_mit_Punkt.png");
+		orignalImages[9][0] = new ImageIcon("src/Images/Trainstop_Mark.png");
+		orignalImages[9][1] = new ImageIcon("src/Images/Trainstop_Mark.png");
+		orignalImages[9][2] = new ImageIcon("src/Images/Trainstop_Mark.png");
+		orignalImages[9][3] = new ImageIcon("src/Images/Trainstop_Mark.png");
 		//-----------------------------------------------------------------------
 				
 	}
@@ -264,9 +260,9 @@ public class Grid extends JPanel implements MouseWheelListener ,MouseListener
      */
 	public void labelPressed(JLabel label)
 	{		
-		for(int col = 0; col < myLabels.length; col++){
-			for(int row = 0; row < myLabels.length; row++){
-				if(label == myLabels[row][col])
+		for(int row = 0; row < myLabels.length; row++){
+			for(int col = 0; col < myLabels.length; col++){
+				if(label == myLabels[col][row])
 				{
 					if(selected == 0)
 					{
@@ -281,8 +277,8 @@ public class Grid extends JPanel implements MouseWheelListener ,MouseListener
 				  	  			                  [selectedOrientation]);
 						UpdateMetadata(sel,
 								   	   selectedOrientation,
-								       row,
-								       col);
+								       col,
+								       row);
 						return;
 					}
 					else
@@ -292,13 +288,14 @@ public class Grid extends JPanel implements MouseWheelListener ,MouseListener
 					}
 					
 					lastenteredLabel = label;
-					lastenteredLabelrow = row;
 					lastenteredLabelcol = col;
+					lastenteredLabelrow = row;
+
 					
 					UpdateMetadata(selected,
 								   selectedOrientation,
-								   row,
-								   col);
+								   col,
+								   row);
 					return;
 				}
 			}
@@ -346,14 +343,24 @@ public class Grid extends JPanel implements MouseWheelListener ,MouseListener
 										  (int) (currentGridTileSize));
 		scaleRailImages();
 		
-		for(int col = 0; col < myLabels.length; col++)
+		for(int row = 0; row < myLabels.length; row++)
 		{
-			for(int row = 0; row < myLabels.length; row++)
+			for(int col = 0; col < myLabels.length; col++)
 			{
-				myLabels[row][col].setIcon(scaledImages[gridMetadata[row][col][0]]
-													   [gridMetadata[row][col][1]]);
-				myLabels[row][col].setSize(newsize);
-				myLabels[row][col].setPreferredSize(newsize);
+				myLabels[col][row].setSize(newsize);
+				myLabels[col][row].setPreferredSize(newsize);
+				if(gridMetadata[col][row][2] != 0)
+				{
+					myLabels[col][row].setIcon(new ImageIcon(mergeImages(scaledImages[gridMetadata[col][row][0]][gridMetadata[col][row][1]].getImage(),scaledImages[8][0].getImage())));
+					continue;
+				}
+				if(gridMetadata[col][row][3] != 0)
+				{
+					myLabels[col][row].setIcon(new ImageIcon(mergeImages(scaledImages[gridMetadata[col][row][0]][gridMetadata[col][row][1]].getImage(),scaledImages[9][0].getImage())));
+					continue;
+				}
+				myLabels[col][row].setIcon(scaledImages[gridMetadata[col][row][0]]
+													   [gridMetadata[col][row][1]]);
 			}
 		}
 	}
@@ -405,11 +412,13 @@ public class Grid extends JPanel implements MouseWheelListener ,MouseListener
      * @return An random integer in the given bounds. #placeholder
      * 
      */
-	private void UpdateMetadata(int imageID, int imageOrientation, int row, int col )
+	private void UpdateMetadata(int imageID, int imageOrientation, int col, int row )
 	{
-		gridMetadata[row][col][0] = imageID;
-		gridMetadata[row][col][1] = imageOrientation;
-		gridMetadata[row][col][2] = 0;
+		gridMetadata[col][row][0] = imageID;
+		gridMetadata[col][row][1] = imageOrientation;
+		gridMetadata[col][row][2] = 0;
+		gridMetadata[col][row][3] = 0;
+		gridMetadata[col][row][4] = 0;
 	}
 	//Overload
 	//
@@ -419,6 +428,19 @@ public class Grid extends JPanel implements MouseWheelListener ,MouseListener
 		{
 			gridMetadata[lb.blockMetadata[index][0]][lb.blockMetadata[index][1]][2] = lb.blockID;
 		}
+	}
+	//Overload
+	//
+	public void UpdateMetadata(Trainstop ts)
+	{
+			gridMetadata[ts.col][ts.row][3] = ts.trainstopID;
+			myLabels[ts.col][ts.row].setIcon(new ImageIcon(mergeImages(scaledImages[gridMetadata[ts.col][ts.row][0]][gridMetadata[ts.col][ts.row][1]].getImage(),scaledImages[9][0].getImage())));
+	}
+	//Overload
+	//
+	public void UpdateMetadata(Train t)
+	{
+			gridMetadata[t.trainLocation[0][0]][t.trainLocation[0][1]][3] = t.trainID;
 	}
 	//-----------------------------------------------------------------------
 	
@@ -434,14 +456,14 @@ public class Grid extends JPanel implements MouseWheelListener ,MouseListener
      */
 	public void showCurrentselect(JLabel label)
 	{
-		for(int col = 0; col < myLabels.length; col++){
-			for(int row = 0; row < myLabels.length; row++){
-				if(label == myLabels[row][col])
+		for(int row = 0; row < myLabels.length; row++){
+			for(int col = 0; col < myLabels.length; col++){
+				if(label == myLabels[col][row])
 				{
 					if(selected == 0)
 					{
-						label.setIcon(scaledImages[gridMetadata[row][col][0]]
-								                  [gridMetadata[row][col][1]]);
+						label.setIcon(scaledImages[gridMetadata[col][row][0]]
+								                  [gridMetadata[col][row][1]]);
 					}
 					else
 					{
@@ -450,8 +472,8 @@ public class Grid extends JPanel implements MouseWheelListener ,MouseListener
 					}
 					
 					lastenteredLabel = label;
-					lastenteredLabelrow = row;
 					lastenteredLabelcol = col;
+					lastenteredLabelrow = row;
 					
 					return;
 				}
@@ -477,19 +499,19 @@ public class Grid extends JPanel implements MouseWheelListener ,MouseListener
 
 	public void hideCurrentselect(JLabel label)
 	{
-		for(int col = 0; col < myLabels.length; col++){
-			for(int row = 0; row < myLabels.length; row++){
-				if(label == myLabels[row][col])
+		for(int row = 0; row < myLabels.length; row++){
+			for(int col = 0; col < myLabels.length; col++){
+				if(label == myLabels[col][row])
 				{
-					label.setIcon(scaledImages[gridMetadata[row][col][0]]
-											  [gridMetadata[row][col][1]]);
+					label.setIcon(scaledImages[gridMetadata[col][row][0]]
+											  [gridMetadata[col][row][1]]);
 					return;
 				}
 			}
 		}
 	}
 	
-	private void mergeImages(Image image, Image overlay, String name)
+	private Image mergeImages(Image image, Image overlay)
 	{
 		// load source images
 		BufferedImage Image = ImageTool.toBufferedImage(image);
@@ -506,89 +528,17 @@ public class Grid extends JPanel implements MouseWheelListener ,MouseListener
 		g.drawImage(Overlay, 0, 0, null);
 		g.dispose();
 		
-		try 
-		{
-			ImageIO.write(combined, "PNG", new File("src/Images/", name));
-		}
-		catch (IOException e) 
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		return ImageTool.toImage(combined);
+		//try 
+		//{
+		//	ImageIO.write(combined, "PNG", new File("src/Images/", name));
+		//}
+		//catch (IOException e) 
+		//{
+		//	// TODO Auto-generated catch block
+		//(	e.printStackTrace();
+		//}
 	}
-	
-	private void createLogicImages()
-	{
-		
-		mergeImages(orignalImages[3][0].getImage(),orignalImages[8][0].getImage(), "p1.png");
-		mergeImages(orignalImages[3][0].getImage(),orignalImages[9][0].getImage(), "s1.png");
-		
-		mergeImages(orignalImages[4][0].getImage(),orignalImages[8][0].getImage(), "p2.png");
-		mergeImages(orignalImages[4][0].getImage(),orignalImages[9][0].getImage(), "s2.png");
-	
-		mergeImages(orignalImages[5][0].getImage(),orignalImages[8][0].getImage(), "p3.png");
-		mergeImages(orignalImages[5][0].getImage(),orignalImages[9][0].getImage(), "s3.png");
-		
-		mergeImages(orignalImages[6][0].getImage(),orignalImages[8][0].getImage(), "p4.png");
-		mergeImages(orignalImages[6][0].getImage(),orignalImages[9][0].getImage(), "s4.png");
-		
-		mergeImages(orignalImages[7][0].getImage(),orignalImages[8][0].getImage(), "p5.png");
-		mergeImages(orignalImages[7][0].getImage(),orignalImages[9][0].getImage(), "s5.png");
-	}
-	private void loadLogicImages()
-	{
-		orignalImages[10][0] = new ImageIcon("src/Images/p1.png");
-		orignalImages[10][1] = new ImageIcon("src/Images/p1.png");
-		orignalImages[10][2] = new ImageIcon("src/Images/p1.png");
-		orignalImages[10][3] = new ImageIcon("src/Images/p1.png");
-		
-		orignalImages[11][0] = new ImageIcon("src/Images/p2.png");
-		orignalImages[11][1] = new ImageIcon("src/Images/p2.png");
-		orignalImages[11][2] = new ImageIcon("src/Images/p2.png");
-		orignalImages[11][3] = new ImageIcon("src/Images/p2.png");
-		
-		orignalImages[12][0] = new ImageIcon("src/Images/p3.png");
-		orignalImages[12][1] = new ImageIcon("src/Images/p3.png");
-		orignalImages[12][2] = new ImageIcon("src/Images/p3.png");
-		orignalImages[12][3] = new ImageIcon("src/Images/p3.png");
-		
-		orignalImages[13][0] = new ImageIcon("src/Images/p4.png");
-		orignalImages[13][1] = new ImageIcon("src/Images/p4.png");
-		orignalImages[13][2] = new ImageIcon("src/Images/p4.png");
-		orignalImages[13][3] = new ImageIcon("src/Images/p4.png");
-		
-		orignalImages[14][0] = new ImageIcon("src/Images/p5.png");
-		orignalImages[14][1] = new ImageIcon("src/Images/p5.png");
-		orignalImages[14][2] = new ImageIcon("src/Images/p5.png");
-		orignalImages[14][3] = new ImageIcon("src/Images/p5.png");
-		
-		orignalImages[15][0] = new ImageIcon("src/Images/s1.png");
-		orignalImages[15][1] = new ImageIcon("src/Images/s1.png");
-		orignalImages[15][2] = new ImageIcon("src/Images/s1.png");
-		orignalImages[15][3] = new ImageIcon("src/Images/s1.png");
-		
-		orignalImages[16][0] = new ImageIcon("src/Images/s2.png");
-		orignalImages[16][1] = new ImageIcon("src/Images/s2.png");
-		orignalImages[16][2] = new ImageIcon("src/Images/s2.png");
-		orignalImages[16][3] = new ImageIcon("src/Images/s2.png");
-		
-		orignalImages[17][0] = new ImageIcon("src/Images/s3.png");
-		orignalImages[17][1] = new ImageIcon("src/Images/s3.png");
-		orignalImages[17][2] = new ImageIcon("src/Images/s3.png");
-		orignalImages[17][3] = new ImageIcon("src/Images/s3.png");
-		
-		orignalImages[18][0] = new ImageIcon("src/Images/s4.png");
-		orignalImages[18][1] = new ImageIcon("src/Images/s4.png");
-		orignalImages[18][2] = new ImageIcon("src/Images/s4.png");
-		orignalImages[18][3] = new ImageIcon("src/Images/s4.png");
-		
-		orignalImages[19][0] = new ImageIcon("src/Images/s5.png");
-		orignalImages[19][1] = new ImageIcon("src/Images/s5.png");
-		orignalImages[19][2] = new ImageIcon("src/Images/s5.png");
-		orignalImages[19][3] = new ImageIcon("src/Images/s5.png");
-		
-	}
-	
 	//MouseListner interface
 	//
 	@Override
@@ -629,18 +579,6 @@ public class Grid extends JPanel implements MouseWheelListener ,MouseListener
 	
 	//Get'r and set'r functions for setlastenteredLabelrow
 	//
-	public void setlastenteredLabelrow(int row)
-	{
-		lastenteredLabelrow = row;
-	}
-	public int getlastenteredLabelrow()
-	{
-		return lastenteredLabelrow;
-	}
-	//-----------------------------------------------------------------------
-		
-	//Get'r and set'r functions for setlastenteredLabelcol
-	//
 	public void setlastenteredLabelcol(int col)
 	{
 		lastenteredLabelcol = col;
@@ -650,10 +588,22 @@ public class Grid extends JPanel implements MouseWheelListener ,MouseListener
 		return lastenteredLabelcol;
 	}
 	//-----------------------------------------------------------------------
+		
+	//Get'r and set'r functions for setlastenteredLabelcol
+	//
+	public void setlastenteredLabelrow(int row)
+	{
+		lastenteredLabelrow = row;
+	}
+	public int getlastenteredLabelrow()
+	{
+		return lastenteredLabelrow;
+	}
+	//-----------------------------------------------------------------------
 	
 	public boolean islastenteredLabelBlocked()
 	{
-		if(gridMetadata[lastenteredLabelrow][lastenteredLabelcol][2] == -1)
+		if(gridMetadata[lastenteredLabelcol][lastenteredLabelrow][2] == -1)
 		{
 			return true;
 		}
@@ -672,9 +622,9 @@ public class Grid extends JPanel implements MouseWheelListener ,MouseListener
 	   add(scrollPane);
 	}
 	
-	public int getgridMetadata(int row, int col, int id)
+	public int getgridMetadata(int col, int row, int id)
 	{
-		return gridMetadata[row][col][id];
+		return gridMetadata[col][row][id];
 	}
 	public int[][][] getgridMetadata()
 	{
@@ -685,12 +635,62 @@ public class Grid extends JPanel implements MouseWheelListener ,MouseListener
 	{
 		gridMetadata = newmetadata.clone();
 		
-		for(int col = 0; col < maxCols; col++)
+		for(int row = 0; row < maxRows; row++)
 		{
-			for(int row = 0; row < maxRows; row++)
+			for(int col = 0; col < maxCols; col++)
 			{
-				myLabels[row][col].setIcon(scaledImages[gridMetadata[row][col][0]]
-													   [gridMetadata[row][col][1]]);
+				if(gridMetadata[col][row][2] != 0)
+				{
+					myLabels[col][row].setIcon(new ImageIcon(mergeImages(scaledImages[gridMetadata[col][row][0]][gridMetadata[col][row][1]].getImage(),scaledImages[8][0].getImage())));
+					continue;
+				}
+				if(gridMetadata[col][row][3] != 0)
+				{
+					myLabels[col][row].setIcon(new ImageIcon(mergeImages(scaledImages[gridMetadata[col][row][0]][gridMetadata[col][row][1]].getImage(),scaledImages[9][0].getImage())));
+					continue;
+				}
+				myLabels[col][row].setIcon(scaledImages[gridMetadata[col][row][0]]
+													   [gridMetadata[col][row][1]]);
+			}
+		}
+	}
+	public void setgridMetadata(int[][][] newmetadata, Simulator sim)
+	{
+		gridMetadata = newmetadata.clone();
+		
+		for(int row = 0; row < maxRows; row++)
+		{
+			for(int col = 0; col < maxCols; col++)
+			{
+				if(gridMetadata[col][row][2] != 0)
+				{
+					myLabels[col][row].setIcon(new ImageIcon(mergeImages(scaledImages[gridMetadata[col][row][0]][gridMetadata[col][row][1]].getImage(),scaledImages[8][0].getImage())));
+					continue;
+				}
+				if(gridMetadata[col][row][3] != 0)
+				{
+					myLabels[col][row].setIcon(new ImageIcon(mergeImages(scaledImages[gridMetadata[col][row][0]][gridMetadata[col][row][1]].getImage(),scaledImages[9][0].getImage())));
+					sim.createTrainstop(col, row, gridMetadata[col][row][3]);
+					continue;
+				}
+				myLabels[col][row].setIcon(scaledImages[gridMetadata[col][row][0]]
+													   [gridMetadata[col][row][1]]);
+			}
+		}
+	}
+	
+	public void updateMouseInfo(JLabel label)
+	{
+		for(int row = 0; row < myLabels.length; row++){
+			for(int col = 0; col < myLabels.length; col++){
+				if(label == myLabels[col][row])
+				{
+					lastenteredLabel = label;
+					lastenteredLabelcol = col;
+					lastenteredLabelrow = row;
+					
+					return;
+				}
 			}
 		}
 	}

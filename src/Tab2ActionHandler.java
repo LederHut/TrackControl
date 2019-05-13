@@ -32,6 +32,7 @@ public class Tab2ActionHandler implements ActionListener {
 		if(e.getSource() == LogicPlanner.transferData) {
 			
 			LPGrid.transfergridMetadata();
+			System.out.println("Reading SMTP Info.");
 			
 		}
 		if(e.getSource() == LogicPlanner.gridSave) {

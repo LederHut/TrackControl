@@ -31,17 +31,12 @@ public class LogicPlanner extends Grid
 	private LogicBlock[] LogicBlocks = new LogicBlock[50];
 	
 	private int[][] coordCache = new int[50][2];
-	private int blockCount = 0;
+	private int blockCount = 1;
 	private int tileCount = 0;
-	private int maxRows = 0;
-	private int maxCols = 0;
 	
 	public LogicPlanner (int rows, int cols, int cellWidth, TrackLayer tl)
 	{
 		super(rows, cols, cellWidth);
-		
-		maxRows = rows;
-		maxCols = cols;
 		
 		TLGrid = tl;
 		
@@ -73,10 +68,10 @@ public class LogicPlanner extends Grid
 		super.addGrid();
 		
 	}
-	public void cacheCoordinats(int row, int col)
+	public void cacheCoordinats(int col, int row)
 	{
-		coordCache[tileCount][0] = row;
-		coordCache[tileCount][1] = col;
+		coordCache[tileCount][0] = col;
+		coordCache[tileCount][1] = row;
 		tileCount++;
 	}
 	public void createLogicBlock()
@@ -119,19 +114,19 @@ public class LogicPlanner extends Grid
 			
 			String str;
 			
-			for(int col = 0; col < maxCols; col++){
-				for(int row = 0; row < maxRows; row++){
+			for(int row = 0; row < Grid.maxRows; row++){
+				for(int col = 0; col < Grid.maxCols; col++){
 					
 					StringBuilder sb = new StringBuilder();
 					
-					sb.append(Integer.toString(row));
-					sb.append(",");
 					sb.append(Integer.toString(col));
+					sb.append(",");
+					sb.append(Integer.toString(row));
 					
-					for(int id = 0; id < 3; id++)
+					for(int id = 0; id < 5; id++)
 					{
 						sb.append(",");
-						sb.append(Integer.toString(super.getgridMetadata(row,col,id)));
+						sb.append(Integer.toString(super.getgridMetadata(col,row,id)));
 					}
 					
 					sb.append(",");
@@ -164,8 +159,8 @@ public class LogicPlanner extends Grid
 			String current;
 			String line = br.readLine();
 			
-			int[] data = new int[5];
-			int [][][] gridMetadata = new int[maxRows][maxCols][3];
+			int[] data = new int[7];
+			int [][][] gridMetadata = new int[Grid.maxCols][Grid.maxRows][5];
 			
 			while(line != null)
 			{
@@ -177,7 +172,7 @@ public class LogicPlanner extends Grid
 				int end = 0;
 				String substr;
 				
-				for(int index = 0; index < 5; index++)
+				for(int index = 0; index < 7; index++)
 				{
 					end = current.indexOf(",", begin);
 					substr = current.substring(begin, end);
@@ -188,6 +183,8 @@ public class LogicPlanner extends Grid
 				gridMetadata[data[0]][data[1]][0] = data[2];
 				gridMetadata[data[0]][data[1]][1] = data[3];
 				gridMetadata[data[0]][data[1]][2] = data[4];
+				gridMetadata[data[0]][data[1]][3] = data[5];
+				gridMetadata[data[0]][data[1]][4] = data[6];
 				
 				line = br.readLine();
 			}

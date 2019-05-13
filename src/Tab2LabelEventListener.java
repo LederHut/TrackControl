@@ -11,7 +11,6 @@ class Tab2LabelEventListener extends MouseAdapter implements KeyListener
 	private Grid Grid;
 	private LogicPlanner LPref;
 	private boolean isPressed = false; //secures that only when the mouse IS pressed that the icon gets replaced
-	private boolean isFree = true;
 	
 	public Tab2LabelEventListener(LogicPlanner lp) 
 	{
@@ -35,7 +34,7 @@ class Tab2LabelEventListener extends MouseAdapter implements KeyListener
 			if(isPressed)
 			{
 				Grid.labelPressed((JLabel)e.getSource());
-				LPref.cacheCoordinats(Grid.getlastenteredLabelrow(), Grid.getlastenteredLabelcol());
+				LPref.cacheCoordinats(Grid.getlastenteredLabelcol(), Grid.getlastenteredLabelrow());
 			}
 		}
 	}
@@ -49,11 +48,11 @@ class Tab2LabelEventListener extends MouseAdapter implements KeyListener
 				isPressed = false;
 				LPref.createLogicBlock();
 			}
-			else	
-			{
-				LPref.resetCache();
-				isPressed = false;
-			}
+			//else	
+			//{
+			//	LPref.resetCache();
+			//	isPressed = false;
+			//}
 		}
 		
 	}
@@ -63,7 +62,7 @@ class Tab2LabelEventListener extends MouseAdapter implements KeyListener
 		if(isPressed)
 		{
 			Grid.labelPressed((JLabel)e.getSource());
-			LPref.cacheCoordinats(Grid.getlastenteredLabelrow(), Grid.getlastenteredLabelcol());
+			LPref.cacheCoordinats(Grid.getlastenteredLabelcol(), Grid.getlastenteredLabelrow());
 		}
 		else
 		{

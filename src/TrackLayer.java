@@ -23,17 +23,12 @@ public class TrackLayer extends Grid
 	private static final long serialVersionUID = -2317402967205059398L;
 	
 	private JPanel Toolbar = null;
-	public static JButton gridSave, gridLoad;
+	public static JButton gridSave,
+						  gridLoad;
 	
-	private int maxRows = 0;
-	private int maxCols = 0;
-	
-	public TrackLayer(int rows, int cols, int cellWidth) 
+	public TrackLayer(int cols, int rows, int cellWidth) 
 	{	
-		super(rows, cols, cellWidth);
-		
-		maxRows = rows;
-		maxCols = cols;
+		super(cols, rows, cellWidth);
 		
 		Toolbar = new JPanel();
 		Toolbar.setPreferredSize(new Dimension(150, 50));
@@ -78,19 +73,19 @@ public class TrackLayer extends Grid
 			
 			String str;
 			
-			for(int col = 0; col < maxCols; col++){
-				for(int row = 0; row < maxRows; row++){
+			for(int row = 0; row < Grid.maxRows; row++){
+				for(int col = 0; col < Grid.maxCols; col++){
 					
 					StringBuilder sb = new StringBuilder();
 					
-					sb.append(Integer.toString(row));
-					sb.append(",");
 					sb.append(Integer.toString(col));
+					sb.append(",");
+					sb.append(Integer.toString(row));
 					
-					for(int id = 0; id < 3; id++)
+					for(int id = 0; id < 5; id++)
 					{
 						sb.append(",");
-						sb.append(Integer.toString(super.getgridMetadata(row,col,id)));
+						sb.append(Integer.toString(super.getgridMetadata(col,row,id)));
 					}
 					
 					sb.append(",");
@@ -123,8 +118,8 @@ public class TrackLayer extends Grid
 			String current;
 			String line = br.readLine();
 			
-			int[] data = new int[5];
-			int [][][] gridMetadata = new int[maxRows][maxCols][3];
+			int[] data = new int[7];
+			int [][][] gridMetadata = new int[Grid.maxCols][Grid.maxRows][5];
 			
 			while(line != null)
 			{
@@ -136,7 +131,7 @@ public class TrackLayer extends Grid
 				int end = 0;
 				String substr;
 				
-				for(int index = 0; index < 5; index++)
+				for(int index = 0; index < 7; index++)
 				{
 					end = current.indexOf(",", begin);
 					substr = current.substring(begin, end);
@@ -147,6 +142,8 @@ public class TrackLayer extends Grid
 				gridMetadata[data[0]][data[1]][0] = data[2];
 				gridMetadata[data[0]][data[1]][1] = data[3];
 				gridMetadata[data[0]][data[1]][2] = data[4];
+				gridMetadata[data[0]][data[1]][2] = data[5];
+				gridMetadata[data[0]][data[1]][2] = data[6];
 				
 				line = br.readLine();
 			}

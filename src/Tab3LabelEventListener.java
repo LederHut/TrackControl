@@ -9,14 +9,17 @@ import javax.swing.SwingUtilities;
 class Tab3LabelEventListener extends MouseAdapter implements KeyListener
 {
 	private Grid Grid;
+	private Simulator SimGrid;
 	private boolean isPressed = false; //secures that only when the mouse IS pressed that the icon gets replaced
 	
-	public Tab3LabelEventListener() 
-	{
+	public Tab3LabelEventListener(Simulator simgrid) 
+	{	
+		SimGrid = simgrid;
 	}
 	public void setGrid(Grid grid)
 	{
 		this.Grid = grid;
+		Grid.setSelect(0);
 	}
 	
 	//When the left mouse button is pressed the selected image is set as the JLabels's icon
@@ -31,7 +34,14 @@ class Tab3LabelEventListener extends MouseAdapter implements KeyListener
 			}
 			if(isPressed)
 			{
-				Grid.labelPressed((JLabel)e.getSource());
+				if(Grid.getSelect() == 1)
+				{
+					SimGrid.createTrainstop(Grid.getlastenteredLabelcol(), Grid.getlastenteredLabelrow());
+				}
+				if(Grid.getSelect() == 2)
+				{
+					//SimGrid.createTrain(Grid.getlastenteredLabelrow(), Grid.getlastenteredLabelcol());
+				}
 			}
 		}
 	}
@@ -56,14 +66,17 @@ class Tab3LabelEventListener extends MouseAdapter implements KeyListener
 		}
 		else
 		{
-			Grid.showCurrentselect((JLabel)e.getSource());
+			Grid.updateMouseInfo((JLabel)e.getSource());
+			if(!Grid.isFocusOwner())
+			{
+				Grid.requestFocusInWindow();
+			}
 		}
 		
 	}
 	@Override
 	public void mouseExited(MouseEvent e)
 	{
-		Grid.hideCurrentselect((JLabel)e.getSource());
 	}
 	
 	//KeyListner interface
@@ -77,6 +90,14 @@ class Tab3LabelEventListener extends MouseAdapter implements KeyListener
 	public void keyPressed(KeyEvent e) {
 		// TODO Auto-generated method stub
 		
+		if(e.getKeyCode() == KeyEvent.VK_1)
+		{
+			Grid.setSelect(1);
+		}
+		if(e.getKeyCode() == KeyEvent.VK_2)
+		{
+			Grid.setSelect(2);
+		}
 	}
 	@Override
 	public void keyReleased(KeyEvent e) {
