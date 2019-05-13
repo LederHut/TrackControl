@@ -28,10 +28,11 @@ public class EntryPoint
         tabbedPane.add(LPGrid,"Logic Planner");
         tabbedPane.add(SimGrid,"Simulator");
         
+        Frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         Frame.add(tabbedPane);
 	}
 	
-	public static void start ()
+	public void start ()
 	{
         Frame.setVisible(true);
 	}

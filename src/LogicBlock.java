@@ -1,6 +1,4 @@
 
-import java.io.*;
-
 public class LogicBlock
 {
 	public int[][] blockMetadata;

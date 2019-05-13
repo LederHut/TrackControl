@@ -37,7 +37,6 @@ public class Simulator extends Grid
 	
 	private SimStart simStart = new SimStart(this);
 	private Tab3ActionHandler actionHandler = new Tab3ActionHandler(this, simStart);
-	//private Tab3LabelEventListener Tab3listener = new Tab3LabelEventListener(this);
 	
 	public Train trains[] = new Train[10];
 	private Trainstop[] trainstops = new Trainstop[20];
