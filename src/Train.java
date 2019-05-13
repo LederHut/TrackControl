@@ -15,6 +15,7 @@ public class Train
 			   maxTrainSteps = 0;
 	public int lastx = 0,
 			   lasty = 0;
+	public boolean isTurned = false;
 	
 	public Train(int trainid, Grid grid)
 	{

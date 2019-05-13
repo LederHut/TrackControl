@@ -71,7 +71,7 @@ public class Simulator extends Grid
 		
 		transferData = new JButton("Transfer Data");
 		transferData.setMargin(new Insets(0, 0, 0, 0));
-		transferData.setPreferredSize(new Dimension(60,30));
+		transferData.setPreferredSize(new Dimension(120,30));
 		transferData.addActionListener(new Tab3ActionHandler(this));
 		
 		gridSave = new JButton("Save");
@@ -93,9 +93,10 @@ public class Simulator extends Grid
 		Toolbar.add(gridSave);
 		Toolbar.add(gridLoad);
 		Toolbar.add(transferData);
+		Toolbar.add(createtrain);
 		Toolbar.add(trainstart);
 		Toolbar.add(trainend);
-		Toolbar.add(createtrain);
+
 			
 		super.initGrid(new Tab3LabelEventListener(this));
 		super.add(Toolbar,BorderLayout.WEST);

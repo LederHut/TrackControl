@@ -88,12 +88,12 @@ public class Tab1LabelEventListener extends MouseAdapter implements KeyListener
 		}
 		if(e.getKeyCode() == KeyEvent.VK_2)
 		{
-			Grid.setSelect(6);
+			Grid.setSelect(7);
 			Grid.showCurrentselect();
 		}
 		if(e.getKeyCode() == KeyEvent.VK_3)
 		{
-			Grid.setSelect(7);
+			Grid.setSelect(6);
 			Grid.showCurrentselect();
 		}
 		if(e.getKeyCode() == KeyEvent.VK_4)
