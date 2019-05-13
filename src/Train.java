@@ -1,30 +1,25 @@
 import java.util.ArrayList;
 
-import javax.swing.ImageIcon;
-
 public class Train
 {
 	Grid gridref;
 	
-	ImageIcon[] trainImages = new ImageIcon[3];
-	
-	int[][] trainLocation = new int[3][2];
-	int[][] trainPath;
-	int trainID = 0;
-	int trainStartCol,
-		trainStartRow;
-	int trainEndCol,
-		trainEndRow;
-	int trainSteps = 0,
-		maxTrainSteps = 0;
+	public int[][] trainLocation = new int[3][2];
+	public int[][] trainPath;
+	public int trainID = 0;
+	public int trainStartCol,
+			   trainStartRow;
+	public int trainEndCol,
+			   trainEndRow;
+	public int trainSteps = 0,
+			   maxTrainSteps = 0;
+	public int lastx = 0,
+			   lasty = 0;
 	
 	public Train(int trainid, Grid grid)
 	{
 		gridref = grid;
 		trainID = trainid;
-		trainImages[0] = new ImageIcon("src/Images/Zug_Modern_1_1.png");
-		trainImages[1] = new ImageIcon("src/Images/Zug_Modern_1_2.png");
-		trainImages[2] = new ImageIcon("src/Images/Zug_Modern_1_3.png");
 	}
 	
 	//A* algorithm

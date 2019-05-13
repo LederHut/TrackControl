@@ -9,11 +9,8 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.concurrent.ThreadLocalRandom;
 
-import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -50,7 +47,7 @@ public class Grid extends JPanel implements MouseWheelListener ,MouseListener
 	public static int maxRows = 0;
 	
 	
-	private final int allImages = 10;
+	private final int allImages = 13;
 	
 	private double currentGridTileSize = 0;
 	
@@ -234,10 +231,10 @@ public class Grid extends JPanel implements MouseWheelListener ,MouseListener
 		//The end and start dot for the logicblocks
 		//
 		//Variation one
-		orignalImages[8][0] = new ImageIcon("src/Images/Punkt_mit_Punkt.png");
-		orignalImages[8][1] = new ImageIcon("src/Images/Punkt_mit_Punkt.png");
-		orignalImages[8][2] = new ImageIcon("src/Images/Punkt_mit_Punkt.png");
-		orignalImages[8][3] = new ImageIcon("src/Images/Punkt_mit_Punkt.png");
+		orignalImages[8][0] = new ImageIcon("src/Images/Punkt_ohne_Punkt.png");
+		orignalImages[8][1] = new ImageIcon("src/Images/Punkt_ohne_Punkt.png");
+		orignalImages[8][2] = new ImageIcon("src/Images/Punkt_ohne_Punkt.png");
+		orignalImages[8][3] = new ImageIcon("src/Images/Punkt_ohne_Punkt.png");
 		//-----------------------------------------------------------------------
 		
 		//The trainstop mark
@@ -247,6 +244,27 @@ public class Grid extends JPanel implements MouseWheelListener ,MouseListener
 		orignalImages[9][1] = new ImageIcon("src/Images/Trainstop_Mark.png");
 		orignalImages[9][2] = new ImageIcon("src/Images/Trainstop_Mark.png");
 		orignalImages[9][3] = new ImageIcon("src/Images/Trainstop_Mark.png");
+		//-----------------------------------------------------------------------
+		
+		//The Train
+		//
+		//Part one
+		orignalImages[10][0] = new ImageIcon("src/Images/Zug_Modern_1_1_1.png");
+		orignalImages[10][1] = new ImageIcon("src/Images/Zug_Modern_1_1_2.png");
+		orignalImages[10][2] = new ImageIcon("src/Images/Zug_Modern_1_1_3.png");
+		orignalImages[10][3] = new ImageIcon("src/Images/Zug_Modern_1_1_4.png");
+		//
+		//Part two
+		orignalImages[11][0] = new ImageIcon("src/Images/Zug_Modern_1_2_1.png");
+		orignalImages[11][1] = new ImageIcon("src/Images/Zug_Modern_1_2_2.png");
+		orignalImages[11][2] = new ImageIcon("src/Images/Zug_Modern_1_2_3.png");
+		orignalImages[11][3] = new ImageIcon("src/Images/Zug_Modern_1_2_4.png");
+		//
+		//Part three
+		orignalImages[12][0] = new ImageIcon("src/Images/Zug_Modern_1_3_1.png");
+		orignalImages[12][1] = new ImageIcon("src/Images/Zug_Modern_1_3_2.png");
+		orignalImages[12][2] = new ImageIcon("src/Images/Zug_Modern_1_3_3.png");
+		orignalImages[12][3] = new ImageIcon("src/Images/Zug_Modern_1_3_4.png");
 		//-----------------------------------------------------------------------
 				
 	}
@@ -443,12 +461,12 @@ public class Grid extends JPanel implements MouseWheelListener ,MouseListener
 		int x1 = t.trainLocation[0][0], y1 = t.trainLocation[0][1],
 			x2 = t.trainLocation[1][0], y2 = t.trainLocation[1][1],
 			x3 = t.trainLocation[2][0], y3 = t.trainLocation[2][1];
-		
-			gridMetadata[x1][y1][3] = t.trainID;
 			
-			myLabels[x1][y1].setIcon(new ImageIcon(mergeImages(scaledImages[gridMetadata[x1][y1][0]][gridMetadata[x1][y1][1]].getImage(),t.trainImages[0].getImage())));
-			myLabels[x2][y2].setIcon(new ImageIcon(mergeImages(scaledImages[gridMetadata[x2][y2][0]][gridMetadata[x2][y2][1]].getImage(),t.trainImages[1].getImage())));
-			myLabels[x3][y3].setIcon(new ImageIcon(mergeImages(scaledImages[gridMetadata[x3][y3][0]][gridMetadata[x3][y3][1]].getImage(),t.trainImages[2].getImage())));
+			myLabels[x1][y1].setIcon(new ImageIcon(mergeImages(scaledImages[gridMetadata[x1][y1][0]][gridMetadata[x1][y1][1]].getImage(),scaledImages[10][gridMetadata[x1][y1][1]].getImage())));
+			myLabels[x2][y2].setIcon(new ImageIcon(mergeImages(scaledImages[gridMetadata[x2][y2][0]][gridMetadata[x2][y2][1]].getImage(),scaledImages[11][gridMetadata[x1][y1][1]].getImage())));
+			myLabels[x3][y3].setIcon(new ImageIcon(mergeImages(scaledImages[gridMetadata[x3][y3][0]][gridMetadata[x3][y3][1]].getImage(),scaledImages[12][gridMetadata[x1][y1][1]].getImage())));
+			
+			myLabels[t.lastx][t.lasty].setIcon(scaledImages[gridMetadata[t.lastx][t.lasty][0]][gridMetadata[t.lastx][t.lasty][1]]);
 	}
 	//-----------------------------------------------------------------------
 	

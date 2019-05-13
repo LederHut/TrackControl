@@ -22,7 +22,7 @@ public class Tab3ActionHandler implements ActionListener {
 	Simulator SimGrid = null;
 	Timer timer = null;
 	
-	private final int TIMER_DELAY = 1000;
+	private final int TIMER_DELAY = 200;
 	
 	public Tab3ActionHandler (Simulator simgird, SimStart simstart)
 	{
